@@ -6,14 +6,16 @@
 cd ~
 git clone git@git-csd.ncsa.illinois.edu:tfleury/bropkgweb.git
 cd bropkgweb
-
 ```
 
 ## Copy files/directories
 ```
 sudo cp -a bropkg /var/www
-sudo chgrp apache /var/www/bropkg
-sudo cp secrets/.env /var/www/bropkg/config
+cp secrets/.env /var/www/bropkg/config/
+chmod 640 /var/www/bropkg/config/.env
+cd /var/www/bropkg
+composer update
+sudo chgrp -R apache /var/www/bropkg
 ```
 
 ## Set up HTTPD
@@ -35,7 +37,7 @@ DocumentRoot /var/www/bropkg
 
 Restart httpd process:
 ```
-service httpd restart
+sudo service httpd restart
 ```
 
 ## Initialize database
@@ -77,16 +79,18 @@ Note: Change USERNAME@HOSTNAME.ORG to the email that should receive emails
 about the output of the bro-pkg-web-updater script.
 
 ```
+sudo su
 pip install bro-pkg
-sudo cp cronjob/bro-pkg-web-updater.php /usr/local/sbin/
-sudo chmod 700 /usr/local/sbin/bro-pkg-web-updater.php
+cp cronjob/bro-pkg-web-updater.php /usr/local/sbin/
+chmod 700 /usr/local/sbin/bro-pkg-web-updater.php
 echo 'MAILTO=USERNAME@HOSTNAME.ORG
 # Read the list of Bro packages and update database at 4am daily
-0 4 * * *    root    /usr/local/sbin/bro-pkg-web-updater.php' > 
+0 4 * * *    root    /usr/local/sbin/bro-pkg-web-updater.php' > \
 /etc/cron.d/bro-pkg-web.cron
+exit
 ```
 Run the script at least once!
 ```
-php /usr/local/sbin/bro-pkg-web-updater.php
+sudo php /usr/local/sbin/bro-pkg-web-updater.php
 ```
 
