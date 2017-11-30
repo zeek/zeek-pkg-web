@@ -23,7 +23,14 @@ Edit /etc/httpd/conf.d/ssl.conf :
 ```
 <VirtualHost _default_:443>
 DocumentRoot "/var/www/bropkg"
+
 ...
+
+<Directory />
+  Options FollowSymLinks
+  AllowOverride All
+</Directory>
+
 </VirtualHost>
 
 ```
