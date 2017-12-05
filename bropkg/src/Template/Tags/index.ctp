@@ -7,8 +7,11 @@
 <nav class="large-3 medium-4 columns" id="actions-sidebar">
     <ul class="side-nav">
         <li class="heading"><?= __('Navigation') ?></li>
-        <li><?= $this->Html->link(__('List All Packages'), ['controller' => 'Packages', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('List All Tags'), ['action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('Home'), '/') ?></li>
+        <li><?= $this->Html->link(__('Packages List'), ['controller' => 'Packages', 'action' => 'index']) ?></li>
+        <?php if $userAdmin): ?>
+            <li><?= $this->Html->link(__('Users List'), ['controller' => 'Users', 'action' => 'index']) ?></li>
+        <?php endif; ?>
     </ul>
 </nav>
 <div class="tags index large-9 medium-8 columns content">

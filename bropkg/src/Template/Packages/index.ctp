@@ -7,7 +7,11 @@
 <nav class="large-3 medium-4 columns" id="actions-sidebar">
     <ul class="side-nav">
         <li class="heading"><?= __('Navigation') ?></li>
-        <li><?= $this->Html->link(__('List All Tags'), ['controller' => 'Tags', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('Home'), '/') ?></li>
+        <li><?= $this->Html->link(__('Tags List'), ['controller' => 'Tags', 'action' => 'index']) ?></li>
+        <?php if ($userAdmin): ?>
+            <li><?= $this->Html->link(__('Users List'), ['controller' => 'Users', 'action' => 'index']) ?></li>
+        <?php endif; ?>
     </ul>
 </nav>
 <div class="packages index large-9 medium-8 columns content">
@@ -22,8 +26,10 @@
         <tbody>
             <?php foreach ($packages as $package): ?>
             <tr>
-                <td><?= $this->Html->link($package->name, ['action' => 'view', $package->id]) ?></td>
-                <td><?= $this->Html->link($package->url, $package->url, ['target' => '_blank']) ?></td>
+                <td><?= $this->Html->link($package->name, 
+                ['action' => 'view', $package->id]) ?></td>
+                <td><?= $this->Html->link($package->url, $package->url, 
+                ['target' => '_blank']) ?></td>
             </tr>
             <?php endforeach; ?>
         </tbody>

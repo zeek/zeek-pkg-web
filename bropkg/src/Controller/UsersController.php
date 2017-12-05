@@ -78,7 +78,12 @@ class UsersController extends AppController
 
     public function logout()
     {
-        return $this->redirect($this->Auth->logout());
+        $redir = $this->Auth->logout();
+        $refer = $this->referer(true);
+        if (preg_match('/users/', $refer)) {
+            $redir = '/';
+        }
+        return $this->redirect($redir);
     }
 
     public function isAuthorized($user = null) 

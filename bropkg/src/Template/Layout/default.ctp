@@ -17,6 +17,7 @@ $this->request->session()->write('lastpage', $this->request->here());
 
     <?= $this->Html->css('base.css') ?>
     <?= $this->Html->css('cake.css') ?>
+    <?= $this->Html->css('bro.css') ?>
     <?= $this->Html->script(['jquery']) ?>
 
     <?= $this->fetch('meta') ?>
@@ -33,14 +34,14 @@ $this->request->session()->write('lastpage', $this->request->here());
         <div class="top-bar-section">
             <ul class="right">
                 <?php if (is_null($userId)): ?>
-                    <li>
+                    <li class="libutton">
                     <?= $this->Html->link('Login', '/oauth/cilogon') ?>
                     </li>
                 <?php else: ?>
-                    <li>
+                    <li class="user">
                     <?= h($userDisplayName) ?>
                     </li>
-                    <li>
+                    <li class="libutton">
                     <?= $this->Html->link('Logout', '/users/logout') ?>
                     </li>
                 <?php endif; ?>

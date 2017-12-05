@@ -88,6 +88,7 @@ class AppController extends Controller
         $session = $this->request->session();
         $userId = $session->read('Auth.User.id');
         $userDisplayName = '';
+        $userAdmin = false;
         if (!is_null($userId)) {
             $userDisplayName = $session->read('Auth.User.display_name');
             if (strlen($userDisplayName) == 0) {
@@ -95,9 +96,15 @@ class AppController extends Controller
                     $session->read('Auth.User.given_name') . ' ' .
                     $session->read('Auth.User.family_name');
             }
+            $this->loadModel('Users');
+            $user = $this->Users->get($userId);
+            if ((isset($user['admin'])) && ($user['admin'] == 1)) {
+                $userAdmin = true;
+            }
         }
         $this->set('userId', $userId);
         $this->set('userDisplayName', $userDisplayName);
+        $this->set('userAdmin', $userAdmin);
     }
 
     /**

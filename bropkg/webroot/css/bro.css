@@ -1,0 +1,9 @@
+li.libutton {
+  border: 2px solid white;
+  border-radius: 2px;
+}
+li.user {
+  color: white;
+  line-height: 2.8125rem;
+  margin-right: 10px;
+}

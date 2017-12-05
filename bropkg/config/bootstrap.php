@@ -248,3 +248,4 @@ EventManager::instance()->on('Muffin/OAuth2.newUser',
  * https://github.com/tanuck/cakephp-markdown
  */
 Plugin::load('Tanuck/Markdown');
+
