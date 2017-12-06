@@ -42,9 +42,14 @@
                     <td><?= h($user->family_name) ?></td>
                     <td><?= h($user->email) ?></td>
                     <td><?= h($user->idp_name) ?></td>
-                    <?= $this->Form->create($user) ?>
-                    <td><?= $this->Form->control('disabled', ['label' => false]) ?></td>
-                    <td><?= $this->Form->control('admin', ['label' => false]) ?></td>
+                    <?= $this->Form->create($user, 
+                    ['url' => ['action' => 'edit']]) ?>
+                    <td><?= $this->Form->control('disabled', 
+                    ['label' => false, 
+                    'disabled' => ($user->id == $userId)]) ?></td>
+                    <td><?= $this->Form->control('admin', 
+                    ['label' => false,
+                    'disabled' => ($user->id == $userId)]) ?></td>
                     <?= $this->Form->end() ?>
                 </tr>
             <?php endforeach; ?>

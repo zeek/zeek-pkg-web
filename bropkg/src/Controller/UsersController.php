@@ -86,7 +86,7 @@ class UsersController extends AppController
         return $this->redirect($redir);
     }
 
-    public function isAuthorized($user = null) 
+    public function isAuthorized($user = null)
     {
         $retval = false;  // Default deny
 
@@ -102,7 +102,7 @@ class UsersController extends AppController
             if (isset($user['disabled']) && $user['disabled']) {
                 $retval = false;
                 $this->Auth->logout();
-            } 
+            }
         }
 
         return $retval;

@@ -54,5 +54,4 @@ class PackagesController extends AppController
         $this->set('package', $package);
         $this->set('_serialize', ['package']);
     }
-
 }

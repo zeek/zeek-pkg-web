@@ -7,6 +7,11 @@ li.user {
   line-height: 2.8125rem;
   margin-right: 10px;
 }
+li.search {
+  color: white;
+  line-height: 2.8125rem;
+  margin-left: 10px;
+}
 .content h4 {
   font-size: large;
   color: teal;

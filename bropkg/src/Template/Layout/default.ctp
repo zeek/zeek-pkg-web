@@ -33,6 +33,11 @@ $this->request->session()->write('lastpage', $this->request->here());
             </li>
         </ul>
         <div class="top-bar-section">
+            <ul class="left">
+                <li class="search">
+                <?= h('Search') ?>
+                </li>
+            </ul>
             <ul class="right">
                 <?php if (is_null($userId)): ?>
                     <li class="libutton">

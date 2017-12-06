@@ -62,7 +62,6 @@ class AppController extends Controller
 
         // Allow all actions
         $this->Auth->allow();
-
     }
 
     /**
@@ -82,22 +81,37 @@ class AppController extends Controller
             $this->set('_serialize', true);
         }
 
-
         // Get the user's id and display name if authenticated
         // and make available to the view
         $session = $this->request->session();
         $userId = $session->read('Auth.User.id');
         $userDisplayName = '';
         $userAdmin = false;
+        $user = null;
+
+        // Get the attributes of the currently logged-in user
         if (!is_null($userId)) {
+            $this->loadModel('Users');
+            $user = $this->Users->get($userId);
+        }
+
+        // Check if the user has been disabled. If so, log him out.
+        if ((!is_null($user)) &&
+            (isset($user['disabled'])) &&
+            ($user['disabled'])) {
+            $this->Auth->logout();
+            $session->write('Auth.User.id', '');
+            $userId = null;
+            $user = null;
+        }
+
+        if (!is_null($user)) {
             $userDisplayName = $session->read('Auth.User.display_name');
             if (strlen($userDisplayName) == 0) {
-                $userDisplayName = 
+                $userDisplayName =
                     $session->read('Auth.User.given_name') . ' ' .
                     $session->read('Auth.User.family_name');
             }
-            $this->loadModel('Users');
-            $user = $this->Users->get($userId);
             if ((isset($user['admin'])) && ($user['admin'] == 1)) {
                 $userAdmin = true;
             }
@@ -113,7 +127,7 @@ class AppController extends Controller
      * @param array|\ArrayAccess $user Active user data
      * @return bool
      */
-    public function isAuthorized($user = null) 
+    public function isAuthorized($user = null)
     {
         $retval = true;  // Default allow
 
@@ -122,7 +136,7 @@ class AppController extends Controller
             if (isset($user['disabled']) && $user['disabled']) {
                 $retval = false;
                 $this->Auth->logout();
-            } 
+            }
         }
 
         return $retval;

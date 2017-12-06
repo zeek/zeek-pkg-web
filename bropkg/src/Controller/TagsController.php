@@ -53,7 +53,8 @@ class TagsController extends AppController
         $pkgids = array_keys($pkglist);
 
         $packagesTable = TableRegistry::get('Packages');
-        $packages = $this->paginate($packagesTable
+        $packages = $this->paginate(
+            $packagesTable
             ->find()
             ->where(['id IN' => $pkgids])
         );
@@ -62,5 +63,4 @@ class TagsController extends AppController
         $this->set(compact('packages'));
         $this->set('_serialize', ['packages']);
     }
-
 }

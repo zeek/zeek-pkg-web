@@ -76,7 +76,7 @@ class PagesController extends AppController
             if (isset($user['disabled']) && $user['disabled']) {
                 $retval = false;
                 $this->Auth->logout();
-            } 
+            }
         }
 
         return $retval;
