@@ -17,7 +17,7 @@ function strClean($str) {
         <li><?= $this->Html->link(__('Home'), '/') ?></li>
         <li><?= $this->Html->link(__('Packages List'), ['controller' => 'Packages', 'action' => 'index']) ?></li>
         <li><?= $this->Html->link(__('Tags List'), ['controller' => 'Tags', 'action' => 'index']) ?></li>
-        <?php if $userAdmin): ?>
+        <?php if ($userAdmin): ?>
             <li><?= $this->Html->link(__('Users List'), ['controller' => 'Users', 'action' => 'index']) ?></li>
         <?php endif; ?>
     </ul>
@@ -39,7 +39,7 @@ function strClean($str) {
     <h3><?= h($package->name) ?></h3>
 
     <div class="row">
-        <h4><?= __('URL') ?></h4>
+         <h4><?= __('URL :') ?></h4>
          <?= $this->Html->link($package->url, $package->url, ['target' => '_blank']) ?>
     </div>
 
@@ -58,9 +58,10 @@ function strClean($str) {
             natsort($versions);
             $versions = array_reverse($versions);
         ?>
-
+        
+        <p></p>
         <div class="row">
-            <h4><?= __('Package Version') ?></h4>
+            <h4><?= __('Package Version :') ?></h4>
             <select class="div-toggle" data-target=".metadata-versions">
                 <?php foreach ($versions as $version): ?>
                     <?= '<option value="' . $version . '" data-show="._' . strClean($version) . '"' . 
@@ -75,61 +76,61 @@ function strClean($str) {
                 <?= '<div class="_' . strClean($metadata->version) . ' hide">' ?>
                     <?php if (strNotNull($metadata->description)): ?>
                     <div class="row">
-                        <h4><?= __('Description') ?></h4>
+                        <h4><?= __('Description :') ?></h4>
                         <?= $this->Text->autoParagraph(h($metadata->description)); ?>
                     </div>
                     <?php endif; ?>
                     <?php if (strNotNull($metadata->script_dir)): ?>
                     <div class="row">
-                        <h4><?= __('Script Dir') ?></h4>
+                        <h4><?= __('Script Dir :') ?></h4>
                         <?= $this->Text->autoParagraph(h($metadata->script_dir)); ?>
                     </div>
                     <?php endif; ?>
                     <?php if (strNotNull($metadata->plugin_dir)): ?>
                     <div class="row">
-                        <h4><?= __('Plugin Dir') ?></h4>
+                        <h4><?= __('Plugin Dir :') ?></h4>
                         <?= $this->Text->autoParagraph(h($metadata->plugin_dir)); ?>
                     </div>
                     <?php endif; ?>
                     <?php if (strNotNull($metadata->build_command)): ?>
                     <div class="row">
-                        <h4><?= __('Build Command') ?></h4>
+                        <h4><?= __('Build Command :') ?></h4>
                         <?= $this->Text->autoParagraph(h($metadata->build_command)); ?>
                     </div>
                     <?php endif; ?>
                     <?php if (strNotNull($metadata->user_vars)): ?>
                     <div class="row">
-                        <h4><?= __('Users Vars') ?></h4>
+                        <h4><?= __('Users Vars :') ?></h4>
                         <?= $this->Text->autoParagraph(h($metadata->user_vars)); ?>
                     </div>
                     <?php endif; ?>
                     <?php if (strNotNull($metadata->test_command)): ?>
                     <div class="row">
-                        <h4><?= __('Test Command') ?></h4>
+                        <h4><?= __('Test Command :') ?></h4>
                         <?= $this->Text->autoParagraph(h($metadata->test_command)); ?>
                     </div>
                     <?php endif; ?>
                     <?php if (strNotNull($metadata->config_files)): ?>
                     <div class="row">
-                        <h4><?= __('Config Files') ?></h4>
+                        <h4><?= __('Config Files :') ?></h4>
                         <?= $this->Text->autoParagraph(h($metadata->config_files)); ?>
                     </div>
                     <?php endif; ?>
                     <?php if (strNotNull($metadata->depends)): ?>
                     <div class="row">
-                        <h4><?= __('Depends') ?></h4>
+                        <h4><?= __('Depends :') ?></h4>
                         <?= $this->Text->autoParagraph(h($metadata->depends)); ?>
                     </div>
                     <?php endif; ?>
                     <?php if (strNotNull($metadata->external_depends)): ?>
                     <div class="row">
-                        <h4><?= __('External Depends') ?></h4>
+                        <h4><?= __('External Depends :') ?></h4>
                         <?= $this->Text->autoParagraph(h($metadata->external_depends)); ?>
                     </div>
                     <?php endif; ?>
                     <?php if (!empty($metadata->tags)): ?>
                     <div class="row">
-                        <h4><?= __('Tags') ?></h4>
+                        <h4><?= __('Tags :') ?></h4>
                         <?php
                             $num = count($metadata->tags);
                             for($i = 0; $i < $num; $i++) {
@@ -153,8 +154,9 @@ function strClean($str) {
     <?php endif; ?>
 
     <?php if (!empty($package->readme)): ?>
+        <p></p>
         <div class="row">
-            <h4><?= __('README') ?></h4>
+            <h4><?= __('README :') ?></h4>
             <article class="markdown-body entry-content" itemprop="text">
             <?= $this->Markdown->transform($package->readme); ?>
             </article>

@@ -9,7 +9,7 @@
         <li class="heading"><?= __('Navigation') ?></li>
         <li><?= $this->Html->link(__('Home'), '/') ?></li>
         <li><?= $this->Html->link(__('Packages List'), ['controller' => 'Packages', 'action' => 'index']) ?></li>
-        <?php if $userAdmin): ?>
+        <?php if ($userAdmin): ?>
             <li><?= $this->Html->link(__('Users List'), ['controller' => 'Users', 'action' => 'index']) ?></li>
         <?php endif; ?>
     </ul>
