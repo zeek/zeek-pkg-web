@@ -23,13 +23,23 @@
                 <th scope="col"><?= $this->Paginator->sort('url') ?></th>
             </tr>
         </thead>
-        <tbody>
+        <tbody style="border-bottom: 1px solid teal">
             <?php foreach ($packages as $package): ?>
             <tr>
+                <table cellpadding="0" cellspacing="0" style="border: 1px
+                solid teal; margin-bottom: 5px">
+                <tr>
                 <td><?= $this->Html->link($package->name, 
                 ['action' => 'view', $package->id]) ?></td>
                 <td><?= $this->Html->link($package->url, $package->url, 
                 ['target' => '_blank']) ?></td>
+                </tr>
+                <tr style="border-bottom: 1px solid teal">
+                <td colspan="2" style="white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:1px;">
+                <?= $package->metadatas[0]->description ?>
+                </td>
+                </tr>
+                </table>
             </tr>
             <?php endforeach; ?>
         </tbody>

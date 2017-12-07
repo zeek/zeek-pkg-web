@@ -34,6 +34,11 @@ class PackagesController extends AppController
     {
         $query = $this->Packages
             ->find('search', ['search' => $this->request->query]);
+        $query->contain([
+            'Metadatas' => [
+                'sort' => ['Metadatas.version' => 'DESC']
+            ]
+        ]);
 
         // $packages = $this->paginate($this->Packages);
         $packages = $this->paginate($query);
