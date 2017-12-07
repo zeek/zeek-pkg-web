@@ -18,6 +18,7 @@ use Cake\ORM\Entity;
  * @property string $config_files
  * @property string $depends
  * @property string $external_depends
+ * @property string $suggests
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *

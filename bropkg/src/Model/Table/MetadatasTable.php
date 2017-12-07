@@ -104,6 +104,10 @@ class MetadatasTable extends Table
             ->scalar('external_depends')
             ->allowEmpty('external_depends');
 
+        $validator
+            ->scalar('suggests')
+            ->allowEmpty('suggests');
+
         return $validator;
     }
 

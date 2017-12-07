@@ -128,6 +128,12 @@ function strClean($str) {
                         <?= $this->Text->autoParagraph(h($metadata->external_depends)); ?>
                     </div>
                     <?php endif; ?>
+                    <?php if (strNotNull($metadata->suggests)): ?>
+                    <div class="row">
+                        <h4><?= __('Suggests :') ?></h4>
+                        <?= $this->Text->autoParagraph(h($metadata->suggests)); ?>
+                    </div>
+                    <?php endif; ?>
                     <?php if (!empty($metadata->tags)): ?>
                     <div class="row">
                         <h4><?= __('Tags :') ?></h4>
@@ -143,9 +149,6 @@ function strClean($str) {
                                 }
                             }
                         ?>
-                        <?php foreach ($metadata->tags as $tag): ?>
-                            <?= $this->Text->autoParagraph(h($metadata->external_depends)); ?>
-                        <?php endforeach; ?>
                     </div>
                     <?php endif; ?>
                 </div>

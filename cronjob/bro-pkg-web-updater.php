@@ -174,6 +174,7 @@ foreach ($pkgarray as $pkg) {
             $config_files = null;
             $depends = null;
             $external_depends = null;
+            $suggests = null;
             $tags = null;
             if (property_exists($pkgjson->$pkg->metadata, $version)) {
                 $description = (property_exists(
@@ -203,16 +204,21 @@ foreach ($pkgarray as $pkg) {
                 $external_depends = (property_exists(
                     $pkgjson->$pkg->metadata->$version, 'external_depends'
                 ) ? $pkgjson->$pkg->metadata->$version->external_depends : null);
+                $suggests = (property_exists(
+                    $pkgjson->$pkg->metadata->$version, 'suggests'
+                ) ? $pkgjson->$pkg->metadata->$version->suggests : null);
                 $tags = (property_exists(
                     $pkgjson->$pkg->metadata->$version, 'tags'
                 ) ? $pkgjson->$pkg->metadata->$version->tags : null);
             }
 
-            // user_vars, depends, and external_depends need massaging
-            // to possibly convert from object to string (if not null)
+            // user_vars, depends, external_depends, and suggests need 
+            // massaging to possibly convert from object to string 
+            // (if not null)
             $user_vars = objToStr($user_vars);
             $depends = objToStr($depends);
             $external_depends = objToStr($external_depends);
+            $suggests = objToStr($suggests);
 
             // Get the database ID for the metadata version (if any)
             $metaid = '';
@@ -231,6 +237,7 @@ foreach ($pkgarray as $pkg) {
                     "config_files=:config_files, " .
                     "depends=:depends, " .
                     "external_depends=:external_depends, " .
+                    "suggests=:suggests, " .
                     "modified=now() " .
                     "WHERE id=:metaid;"
                 );
@@ -244,6 +251,7 @@ foreach ($pkgarray as $pkg) {
                     'config_files' => $config_files,
                     'depends' => $depends,
                     'external_depends' => $external_depends,
+                    'suggests' => $suggests,
                     'metaid' => $metaid
                 ]);
             } else { // Package doesn't exist in the database. Insert it and get ID.
@@ -252,7 +260,7 @@ foreach ($pkgarray as $pkg) {
                     "VALUES(uuid(), :pkgid, :version, " .
                     ":description, :script_dir, :plugin_dir, :build_command, " .
                     ":user_vars, :test_command, :config_files, " .
-                    ":depends, :external_depends, now(), now());");
+                    ":depends, :external_depends, :suggests, now(), now());");
                 $stmt->execute([
                     'pkgid' => $pkgid,
                     'version' => $version,
@@ -264,7 +272,8 @@ foreach ($pkgarray as $pkg) {
                     'test_command' => $test_command,
                     'config_files' => $config_files,
                     'depends' => $depends,
-                    'external_depends' => $external_depends
+                    'external_depends' => $external_depends,
+                    'suggests' => $suggests
                 ]);
                 $stmt = $pdo->prepare("SELECT id FROM metadatas " .
                     "WHERE package_id=:pkgid AND version=:version;");
