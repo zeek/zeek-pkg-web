@@ -212,13 +212,12 @@ foreach ($pkgarray as $pkg) {
                 ) ? $pkgjson->$pkg->metadata->$version->tags : null);
             }
 
-            // user_vars, depends, external_depends, and suggests need 
+            // user_vars, depends, and external_depends need 
             // massaging to possibly convert from object to string 
             // (if not null)
             $user_vars = objToStr($user_vars);
             $depends = objToStr($depends);
             $external_depends = objToStr($external_depends);
-            $suggests = objToStr($suggests);
 
             // Get the database ID for the metadata version (if any)
             $metaid = '';
