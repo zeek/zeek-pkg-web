@@ -215,12 +215,12 @@ foreach ($pkgarray as $pkg) {
                 ) ? $pkgjson->$pkg->metadata->$version->tags : null);
             }
 
-            // user_vars, depends, and external_depends need 
-            // massaging to possibly convert from object to string 
-            // (if not null)
+            // Some fields may need massaging to possibly convert from
+            // object to string 
             $user_vars = objToStr($user_vars);
             $depends = objToStr($depends);
             $external_depends = objToStr($external_depends);
+            $suggests = objToStr($suggests);
 
             // Get the database ID for the metadata version (if any)
             $metaid = '';
@@ -341,10 +341,14 @@ $stmt->execute();
 function objToStr($obj) {
     $retval = null;
     if (!is_null($obj)) {
-        $keys = array_keys(get_object_vars($obj));
-        $str = '';
-        foreach ($keys as $key) {
-            $str .= $key . ' ' . $obj->$key . "\n";
+        if (is_object($obj)) {
+            $keys = array_keys(get_object_vars($obj));
+            $str = '';
+            foreach ($keys as $key) {
+                $str .= $key . ' ' . $obj->$key . "\n";
+            }
+        } else { // Just a string
+            $str = $obj;
         }
         $retval = trim($str);
     }
