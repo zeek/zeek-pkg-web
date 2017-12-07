@@ -57,6 +57,9 @@ if ($running) {
     $stmt->execute();
 }
 
+// Refresh bro package listing
+$refresh = shell_exec("$broexec refresh");
+
 // Get a list of all bro packages
 $pkglist = shell_exec("$broexec list all --nodesc");
 $pkgarray = explode("\n", trim($pkglist));
