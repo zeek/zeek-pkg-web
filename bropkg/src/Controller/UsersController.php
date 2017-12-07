@@ -49,6 +49,14 @@ class UsersController extends AppController
      */
     public function edit($id = null)
     {
+        // If no user specified, simply list all users
+        if (is_null($id)) {
+            return $this->redirct([
+                'controller' => 'Users',
+                'action' => 'index'
+            ]);
+        }
+
         $user = $this->Users->get($id, [
             'contain' => []
         ]);

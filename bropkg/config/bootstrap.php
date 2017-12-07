@@ -221,7 +221,6 @@ if (Configure::read('debug')) {
 /*
  * https://github.com/UseMuffin/OAuth2
  */
-
 Plugin::load('Muffin/OAuth2');
 Configure::write('Muffin/OAuth2', [
     'providers' => [
@@ -249,3 +248,7 @@ EventManager::instance()->on('Muffin/OAuth2.newUser',
  */
 Plugin::load('Tanuck/Markdown');
 
+/*
+ * https://github.com/FriendsOfCake/search
+ */
+Plugin::load('Search');

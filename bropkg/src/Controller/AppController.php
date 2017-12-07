@@ -57,6 +57,10 @@ class AppController extends Controller
             ]
         ]);
 
+        $this->loadComponent('Search.Prg', [
+            'actions' => ['index']
+        ]);
+
         // Set up Controller authorization via isAuthorized()
         $this->Auth->config('authorize', ['Controller']);
 

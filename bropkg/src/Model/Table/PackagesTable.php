@@ -39,6 +39,7 @@ class PackagesTable extends Table
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
+        $this->addBehavior('Search.Search');
 
         $this->hasMany('Metadatas', [
             'foreignKey' => 'package_id'
@@ -71,5 +72,27 @@ class PackagesTable extends Table
             ->allowEmpty('readme');
 
         return $validator;
+    }
+
+    /**
+     * https://github.com/FriendsOfCake/search
+     */
+    public function searchManager()
+    {
+        $searchManager = $this->behaviors()->Search->searchManager();
+        $searchManager
+            ->value('id')
+            ->add('q', 'Search.Like', [
+                'before' => true,
+                'after' => true,
+                'fieldMode' => 'OR',
+                'comparison' => 'LIKE',
+                'wildcardAny' => '*',
+                'wildcardOne' => '?',
+                'field' => ['name', 'readme']
+
+            ]);
+
+        return $searchManager;
     }
 }

@@ -41,6 +41,14 @@ class TagsController extends AppController
      */
     public function view($id = null)
     {
+        // If no tag specified, simply list all tags.
+        if (is_null($id)) {
+            return $this->redirect([
+                'controller' => 'Tags', 
+                'action' => 'index'
+            ]);
+        } 
+
         $tag = $this->Tags->get($id, [
             'contain' => ['Metadatas']
         ]);

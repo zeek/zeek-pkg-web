@@ -32,7 +32,11 @@ class PackagesController extends AppController
      */
     public function index()
     {
-        $packages = $this->paginate($this->Packages);
+        $query = $this->Packages
+            ->find('search', ['search' => $this->request->query]);
+
+        // $packages = $this->paginate($this->Packages);
+        $packages = $this->paginate($query);
 
         $this->set(compact('packages'));
         $this->set('_serialize', ['packages']);
@@ -47,6 +51,14 @@ class PackagesController extends AppController
      */
     public function view($id = null)
     {
+        // If no pakcage specified, simply list all packages.
+        if (is_null($id)) {
+            return $this->redirect([
+                'controller' => 'Packages',
+                'action' => 'index'
+            ]);
+        }
+
         $package = $this->Packages->get($id, [
             'contain' => ['Metadatas.Tags']
         ]);

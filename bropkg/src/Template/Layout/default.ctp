@@ -19,6 +19,7 @@ $this->request->session()->write('lastpage', $this->request->here());
     <?= $this->Html->css('cake.css') ?>
     <?= $this->Html->css('bro.css') ?>
     <?= $this->Html->css('github.css') ?>
+    <?= $this->Html->css('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'); ?>
     <?= $this->Html->script(['jquery']) ?>
 
     <?= $this->fetch('meta') ?>
@@ -29,14 +30,28 @@ $this->request->session()->write('lastpage', $this->request->here());
     <nav class="top-bar expanded" data-topbar>
         <ul class="title-area large-3 medium-4 columns">
             <li class="name">
-                <h1><a href=""><?= $this->fetch('title') ?></a></h1>
+                <h1><?= $this->Html->link($this->fetch('title'),
+                ['controller' => $this->request->params['controller']]) ?><h1>
             </li>
         </ul>
         <div class="top-bar-section">
             <ul class="left">
+                <?= $this->Form->create(null, [
+                    'url' => ['controller' => 'Packages', 
+                    'action' => 'index'],
+                    'valueSources' => ['query']
+                ]); ?>
                 <li class="search">
-                <?= h('Search') ?>
+                <?= $this->Form->text('q', [
+                'placeholder' => 'Search...',
+                'maxlength' => '50',
+                'size' => '30'
+                ]); ?>
                 </li>
+                <li>
+                <button type="submit"><i class="fa fa-search"></i></button>
+                </li>
+                <?= $this->Form->end(); ?>
             </ul>
             <ul class="right">
                 <?php if (is_null($userId)): ?>

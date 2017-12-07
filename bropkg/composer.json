@@ -13,7 +13,8 @@
         "josegonzalez/dotenv": "2.*",
         "cilogon/oauth2-cilogon": "^1.1",
         "muffin/oauth2": "dev-master",
-        "tanuck/cakephp-markdown": "^0.1.0"
+        "tanuck/cakephp-markdown": "^0.1.0",
+        "friendsofcake/search": "^4.2"
     },
     "require-dev": {
         "psy/psysh": "@stable",
