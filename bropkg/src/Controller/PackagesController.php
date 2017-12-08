@@ -32,11 +32,6 @@ class PackagesController extends AppController
      */
     public function index()
     {
-        if (!is_null($this->request->query)) {
-            $this->loadModel('Metadatas');
-            $this->loadModel('Tags');
-        }
-
         $query = $this->Packages
             ->find('search', ['search' => $this->request->query])
             ->leftJoinWith('Metadatas')
