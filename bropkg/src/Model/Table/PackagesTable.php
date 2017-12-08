@@ -81,15 +81,19 @@ class PackagesTable extends Table
     {
         $searchManager = $this->behaviors()->Search->searchManager();
         $searchManager
-            ->value('id')
             ->add('q', 'Search.Like', [
                 'before' => true,
                 'after' => true,
-                'fieldMode' => 'OR',
-                'comparison' => 'LIKE',
-                'wildcardAny' => '*',
-                'wildcardOne' => '?',
-                'field' => ['name', 'readme']
+                'field' => [
+                    'name', 'readme', 
+                    'Metadatas.description', 'Metadatas.script_dir',
+                    'Metadatas.plugin_dir', 'Metadatas.build_command',
+                    'Metadatas.user_vars', ' Metadatas.test_command',
+                    'Metadatas.config_files', 'Metadatas.depends',
+                    'Metadatas.external_depends', 
+                    'Metadatas.suggests',
+                    'Tags.name'
+                ]
 
             ]);
 

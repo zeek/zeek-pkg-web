@@ -36,7 +36,8 @@ $this->assign('title', 'Home');
         from the <?= $this->Html->link(__('Bro Package Github Repository'),
         'https://github.com/bro/packages',
         ['target' => '_blank']) ?>. Use the links in the Navigation panel
-        to browse by package names or tags. 
+        to browse by package names or tags. (Note that the list of packages
+        is updated once a day.)
     </p>
     <p>
     Once you have found a package you want to install, use the 
@@ -51,4 +52,24 @@ $this->assign('title', 'Home');
     <p>
     <pre>bro-pkg install bro/ncsa/bro-doctor</pre>
     </p>
+    <hr/>
+    <p/>
+    <br/>
+    <h5>More Features Coming Soon</h5>
+    <?php
+    $features = [
+        'User Comments/Ratings for packages',
+        'Nightly Travis CI build and test of packages',
+        'Improved layout and navigation'
+    ];
+    echo $this->Html->nestedList($features);
+    ?>
+    <h5>Possible Features Coming Later</h5>
+    <?php
+    $features = [
+        'Advanced search page',
+        'Package creation/upload assistance'
+    ];
+    echo $this->Html->nestedList($features);
+    ?>
 </div>

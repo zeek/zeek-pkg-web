@@ -32,15 +32,21 @@ class PackagesController extends AppController
      */
     public function index()
     {
-        $query = $this->Packages
-            ->find('search', ['search' => $this->request->query]);
-        $query->contain([
-            'Metadatas' => [
-                'sort' => ['Metadatas.version' => 'DESC']
-            ]
-        ]);
+        if (!is_null($this->request->query)) {
+            $this->loadModel('Metadatas');
+            $this->loadModel('Tags');
+        }
 
-        // $packages = $this->paginate($this->Packages);
+        $query = $this->Packages
+            ->find('search', ['search' => $this->request->query])
+            ->leftJoinWith('Metadatas')
+            ->leftJoinWith('Metadatas.Tags')
+            ->contain([
+                'Metadatas' => ['sort' => ['Metadatas.version' => 'DESC']]
+            ])
+            ->group('Packages.id')
+            ;
+
         $packages = $this->paginate($query);
 
         $this->set(compact('packages'));
