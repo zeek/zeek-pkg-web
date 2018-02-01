@@ -4,13 +4,15 @@
 
 ```
 cd ~
-git clone git@git-csd.ncsa.illinois.edu:tfleury/bropkgweb.git
+git clone git@github.com:ncsa/bropkgweb.git
 cd bropkgweb
 ```
 
 ## Copy files/directories
 ```
 sudo cp -a bropkg /var/www
+### Modify salt, database password, and CILogon client id/key in 
+###     secrets/.env to something suitable for your installation
 cp secrets/.env /var/www/bropkg/config/
 chmod 640 /var/www/bropkg/config/.env
 cd /var/www/bropkg
@@ -48,7 +50,6 @@ sudo service httpd restart
 ```
 
 ## Initialize database
-Database root password is in the Shared-security-certauth LastPass folder.
 
 ```
 mysql_secure_installation    # only needed once
@@ -76,7 +77,9 @@ Cleaning up...
 All done!
 ```
 
-Load bropkg user and associated tables.
+Load bropkg user and associated tables. Change BRO_USER_PASSWORD to
+something suitable for the installation.
+
 ```
 mysql -u root -p < secrets/database.sql
 ```
