@@ -1,6 +1,6 @@
 # INSTALLATION
 
-## Checkout code
+## Check out code
 
 ```
 cd ~
