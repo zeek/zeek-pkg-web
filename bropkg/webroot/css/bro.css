@@ -17,7 +17,7 @@ li.search {
   color: teal;
   display: inline;
   padding-bottom: 0;
-  border-bottom: 1px solid teal;
+  border-bottom: none;
 }
 select.div-toggle {
   width: 20%;
@@ -25,4 +25,11 @@ select.div-toggle {
 .markdown-body {
   margin: 10px;
   padding: 10px;
+}
+
+.packagebox {
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    margin-bottom: 20px;
+    padding: 10px 10px 0px 10px;
 }

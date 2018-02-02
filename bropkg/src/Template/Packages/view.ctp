@@ -36,12 +36,21 @@ function strClean($str) {
 <?= $this->Html->scriptend(); ?>
 
 <div class="packages view large-9 medium-8 columns content">
-    <h3><?= h($package->name) ?></h3>
+    <h3><?= h($package->basename) ?></h3>
 
     <div class="row">
-         <h4><?= __('URL :') ?></h4>
          <?= $this->Html->link($package->url, $package->url, ['target' => '_blank']) ?>
     </div>
+
+    <?php if (!empty($package->readme)): ?>
+        <p></p>
+        <div class="row">
+            <article class="markdown-body entry-content" itemprop="text">
+            <?= $this->Markdown->transform($package->readme); ?>
+            </article>
+        </div>
+    <?php endif; ?>
+
 
     <?php if (!empty($package->metadatas)): ?>
 
@@ -153,16 +162,6 @@ function strClean($str) {
                     <?php endif; ?>
                 </div>
             <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
-
-    <?php if (!empty($package->readme)): ?>
-        <p></p>
-        <div class="row">
-            <h4><?= __('README :') ?></h4>
-            <article class="markdown-body entry-content" itemprop="text">
-            <?= $this->Markdown->transform($package->readme); ?>
-            </article>
         </div>
     <?php endif; ?>
 
