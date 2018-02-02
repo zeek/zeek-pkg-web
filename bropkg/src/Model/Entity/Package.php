@@ -31,4 +31,16 @@ class Package extends Entity
         '*' => true,
         'id' => false
     ];
+
+    protected function _getBasename()
+    {
+        $parts = explode("/", $this->_properties['name']);
+        return end($parts);
+    }
+    protected function _getAuthor()
+    {
+        $parts = explode("/", $this->_properties['name']);
+        return $parts[1];
+    }
+
 }

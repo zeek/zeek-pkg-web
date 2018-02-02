@@ -16,34 +16,17 @@
 </nav>
 <div class="packages index large-9 medium-8 columns content">
     <h3><?= __('Packages') ?></h3>
-    <table cellpadding="0" cellspacing="0">
-        <thead>
-            <tr>
-                <th scope="col"><?= $this->Paginator->sort('name') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('url') ?></th>
-            </tr>
-        </thead>
-        <tbody style="border-bottom: 1px solid teal">
-            <?php foreach ($packages as $package): ?>
-            <tr>
-                <table cellpadding="0" cellspacing="0" style="border: 1px
-                solid teal; margin-bottom: 5px">
-                <tr>
-                <td><?= $this->Html->link($package->name, 
-                ['action' => 'view', $package->id]) ?></td>
-                <td><?= $this->Html->link($package->url, $package->url, 
-                ['target' => '_blank']) ?></td>
-                </tr>
-                <tr style="border-bottom: 1px solid teal">
-                <td colspan="2" style="white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:1px;">
-                <?= $package->metadatas[0]->description ?>
-                </td>
-                </tr>
-                </table>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+    <?php foreach ($packages as $package): ?>
+    <div class="packagebox">
+        <h4> <?= $this->Html->link($package->basename, ['action' => 'view', $package->id]) ?>
+        </h4>
+        <p>
+            By <?= $this->Html->link($package->author, ['action' => 'index', '?' =>  ['q' => $package->author]]) ?>
+        <p>
+        <?= $package->metadatas[0]->description ?>
+        </p>
+    </div>
+    <?php endforeach; ?>
     <div class="paginator">
         <ul class="pagination">
             <?= $this->Paginator->first('<< ' . __('first')) ?>
