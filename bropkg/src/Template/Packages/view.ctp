@@ -45,7 +45,7 @@ function strClean($str) {
     <?php if (!empty($package->readme)): ?>
         <p></p>
         <div class="row">
-            <article class="markdown-body entry-content" itemprop="text">
+            <article class="markdown-body entry-content">
             <?= $this->Markdown->transform($package->readme); ?>
             </article>
         </div>

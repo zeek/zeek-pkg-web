@@ -31,28 +31,28 @@ $this->request->session()->write('lastpage', $this->request->here());
         <ul class="title-area large-3 medium-4 columns">
             <li class="name">
                 <h1><?= $this->Html->link($this->fetch('title'),
-                ['controller' => $this->request->params['controller']]) ?><h1>
+                ['controller' => $this->request->params['controller']]) ?></h1>
             </li>
         </ul>
         <div class="top-bar-section">
-            <ul class="left">
-                <?= $this->Form->create(null, [
-                    'url' => ['controller' => 'Packages', 
-                    'action' => 'index'],
-                    'valueSources' => ['query']
-                ]); ?>
-                <li class="search">
-                <?= $this->Form->text('q', [
-                'placeholder' => 'Search...',
-                'maxlength' => '50',
-                'size' => '30'
-                ]); ?>
-                </li>
-                <li>
-                <button type="submit"><i class="fa fa-search"></i></button>
-                </li>
-                <?= $this->Form->end(); ?>
-            </ul>
+            <?= $this->Form->create(null, [
+                'url' => ['controller' => 'Packages', 
+                'action' => 'index'],
+                'valueSources' => ['query']
+            ]); ?>
+                <ul class="left">
+                    <li class="search">
+                    <?= $this->Form->text('q', [
+                    'placeholder' => 'Search...',
+                    'maxlength' => '50',
+                    'size' => '30'
+                    ]); ?>
+                    </li>
+                    <li>
+                    <button type="submit"><i class="fa fa-search"></i></button>
+                    </li>
+                </ul>
+            <?= $this->Form->end(); ?>
             <ul class="right">
                 <?php if (is_null($userId)): ?>
                     <li class="libutton">
