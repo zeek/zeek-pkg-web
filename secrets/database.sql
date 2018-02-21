@@ -51,7 +51,7 @@ CREATE TABLE metadatas (
     suggests TEXT,
     created DATETIME,
     modified DATETIME,
-    FOREIGN KEY package_key (package_id) REFERENCES packages(id)
+    FOREIGN KEY package_key (package_id) REFERENCES packages(id) ON DELETE CASCADE;
 );
 
 CREATE TABLE tags (
@@ -65,8 +65,8 @@ create TABLE metadatas_tags (
     metadata_id CHAR(36) NOT NULL,
     tag_id CHAR(36) NOT NULL,
     PRIMARY KEY (metadata_id, tag_id),
-    FOREIGN KEY metadata_key (metadata_id) REFERENCES metadatas(id),
-    FOREIGN KEY tag_key (tag_id) REFERENCES tags(id)
+    FOREIGN KEY metadata_key (metadata_id) REFERENCES metadatas(id) ON DELETE CASCADE,
+    FOREIGN KEY tag_key (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 );
 
 create TABLE updater (

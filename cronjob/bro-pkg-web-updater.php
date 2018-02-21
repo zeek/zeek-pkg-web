@@ -17,9 +17,141 @@ if (($envlines = file($envfile)) === false) {
 }
 $githubtoken = searchEnvFile('GITHUBTOKEN', $envlines);
 $sqldb       = searchEnvFile('DB_DATABASE', $envlines);
-$sqlhost     = searchEnvFile('DB_HOST',     $envlines);
+$sqlhost     = searchEnvFile('DB_HOST', $envlines);
 $sqluser     = searchEnvFile('DB_USERNAME', $envlines);
 $sqlpass     = searchEnvFile('DB_PASSWORD', $envlines);
+
+// Read all info from bro-pkg into local variable $pkgs to
+// make database updating as fast as possible.
+$pkgs = array();
+
+// Refresh the local bro package listing.
+$refresh = shell_exec("$broexec refresh");
+
+// Get a list of all bro packages
+$pkglist = shell_exec("$broexec list all --nodesc");
+$pkgarray = explode("\n", trim($pkglist));
+
+$pkgcount = count($pkgarray);
+if ($pkgcount > 0) {
+    echo "Processing $pkgcount packages";
+}
+foreach ($pkgarray as $pkg) {
+    echo ".";
+
+    // Remove trailing 'local package' information
+    $pkg = preg_replace('/\s.*$/', '', $pkg);
+
+
+    // Get package info for the current package
+    $pkginfo = shell_exec("$broexec info $pkg --json --nolocal --allvers");
+    $pkgjson = json_decode($pkginfo, false);
+
+    // Verify package name from JSON is correct
+    $pkgname = key($pkgjson);
+    if (is_null($pkgname)) {
+        echo "\nError. No package name in JSON for '$pkg'. Skipping.\n";
+        continue;
+    }
+    if ($pkg != $pkgname) {
+        echo "\nError. Mismatched package name in JSON for '$pkg'. Skipping.\n";
+        continue;
+    }
+
+    // Get the package URL
+    if (property_exists($pkgjson->$pkg, 'url')) {
+        $pkgurl = $pkgjson->$pkg->url;
+        $pkgs[$pkg]['url'] = $pkgurl;
+    } else {
+        echo "\nError. No URL IN JSON for '$pkg'. Skipping.\n";
+        continue;
+    }
+
+    // Use $pkgurl to fetch the GitHub README file for the package.
+    // https://developer.github.com/v3/repos/contents/#get-the-readme
+    $apiurl = preg_replace('|github.com/|', 'api.github.com/repos/', $pkgurl);
+    $apiurl .= '/readme';
+    $pkgs[$pkg]['readme'] = false;
+    $ch = curl_init();
+    if ($ch !== false) {
+        curl_setopt($ch, CURLOPT_URL, $apiurl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'curl');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array("Authorization: token $githubtoken"));
+        $output = curl_exec($ch);
+        if (!empty($output)) {
+            $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            if ($httpcode == 200) {
+                $readmejson = json_decode($output, false);
+                if (property_exists($readmejson, 'content')) {
+                    $pkgs[$pkg]['readme'] = base64_decode($readmejson->content);
+                }
+            }
+        }
+        curl_close($ch);
+    }
+
+    // Get all versions of metadatas for the package
+    if (property_exists($pkgjson->$pkg, 'metadata')) {
+        $versions = array_keys(get_object_vars($pkgjson->$pkg->metadata));
+        foreach ($versions as $version) {
+            if (property_exists($pkgjson->$pkg->metadata, $version)) {
+                $pkgs[$pkg]['metadata'][$version]['description'] =
+                    (property_exists($pkgjson->$pkg->metadata->$version, 'description')
+                      ? $pkgjson->$pkg->metadata->$version->description
+                      : null);
+                $pkgs[$pkg]['metadata'][$version]['script_dir'] =
+                    (property_exists($pkgjson->$pkg->metadata->$version, 'script_dir')
+                      ? $pkgjson->$pkg->metadata->$version->script_dir
+                      : null);
+                $pkgs[$pkg]['metadata'][$version]['plugin_dir'] =
+                    (property_exists($pkgjson->$pkg->metadata->$version, 'plugin_dir')
+                      ? $pkgjson->$pkg->metadata->$version->plugin_dir
+                      : null);
+                $pkgs[$pkg]['metadata'][$version]['build_command'] =
+                    (property_exists($pkgjson->$pkg->metadata->$version, 'build_command')
+                      ? $pkgjson->$pkg->metadata->$version->build_command
+                      : null);
+                $pkgs[$pkg]['metadata'][$version]['user_vars'] =
+                    (property_exists($pkgjson->$pkg->metadata->$version, 'user_vars')
+                      ?  objToStr($pkgjson->$pkg->metadata->$version->user_vars)
+                      : null);
+                $pkgs[$pkg]['metadata'][$version]['test_command'] =
+                    (property_exists($pkgjson->$pkg->metadata->$version, 'test_command')
+                      ? $pkgjson->$pkg->metadata->$version->test_command
+                      : null);
+                $pkgs[$pkg]['metadata'][$version]['config_files'] =
+                    (property_exists($pkgjson->$pkg->metadata->$version, 'config_files')
+                      ? $pkgjson->$pkg->metadata->$version->config_files
+                      : null);
+                $pkgs[$pkg]['metadata'][$version]['depends'] =
+                    (property_exists($pkgjson->$pkg->metadata->$version, 'depends')
+                      ? objToStr($pkgjson->$pkg->metadata->$version->depends)
+                      : null);
+                $pkgs[$pkg]['metadata'][$version]['external_depends'] =
+                    (property_exists($pkgjson->$pkg->metadata->$version, 'external_depends')
+                      ? objToStr($pkgjson->$pkg->metadata->$version->external_depends)
+                      : null);
+                $pkgs[$pkg]['metadata'][$version]['suggests'] =
+                    (property_exists($pkgjson->$pkg->metadata->$version, 'suggests')
+                      ? objToStr($pkgjson->$pkg->metadata->$version->suggests)
+                      : null);
+                $pkgs[$pkg]['metadata'][$version]['tags'] =
+                    (property_exists($pkgjson->$pkg->metadata->$version, 'tags')
+                      ? $pkgjson->$pkg->metadata->$version->tags
+                      : null);
+            }
+        }
+    }
+}
+if ($pkgcount > 0) {
+    echo "Done!\n";
+}
 
 // Set up database connection
 $sqldsn  = "mysql:host=$sqlhost;dbname=$sqldb;charset=utf8mb4";
@@ -34,17 +166,30 @@ try {
     exit('Error. Database Connection Failed: ' . $e->getMessage() . "\n");
 }
 
+// Get the list of packages in the database to see if
+// we need to delete ones not in the bro-pkg listing.
+$datapkgs = array();
+$stmt = $pdo->prepare('SELECT name FROM packages');
+$stmt->execute();
+if ($stmt->rowCount() > 0) {
+    $datapkgs = $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
+
 // Check if updater is already running
 $running = false;
-$stmt = $pdo->query('SELECT status FROM updater');
+$stmt = $pdo->prepare('SELECT status, started FROM updater;');
+$stmt->execute();
 if ($stmt->rowCount() > 0) {
     $row = $stmt->fetch();
     if ($row['status'] == 'running') {
-        $running = true;
+        // If updater has been running over an hour, then start anew.
+        if ((time() - strtotime($row['started'])) < 3600) {
+            $running = true;
+        }
     }
 } else {
     // First time running
-    $stmt = $pdo->prepare("INSERT INTO updater (id,status) VALUES(1,'idle')");
+    $stmt = $pdo->prepare("INSERT INTO updater (id,status) VALUES(1,'idle');");
     $stmt->execute();
 }
 
@@ -53,105 +198,55 @@ if ($running) {
 } else {
     // Write 'running' for updater status
     $stmt = $pdo->prepare("UPDATE updater SET status='running', " .
-        "started=now() WHERE id=1;");
+        "started=now(), package=NULL WHERE id=1;");
     $stmt->execute();
 }
 
-// Refresh bro package listing
-$refresh = shell_exec("$broexec refresh");
+// Scan through the previously populated $pkgs array and 
+// write the package info to the database.
 
-// Get a list of all bro packages
-$pkglist = shell_exec("$broexec list all --nodesc");
-$pkgarray = explode("\n", trim($pkglist));
-
-foreach ($pkgarray as $pkg) {
-    // Remove trailing 'local package' information
-    $pkg = preg_replace('/\s.*$/', '', $pkg);
-
-    echo "Processing package '$pkg'\n";
+$pkgidx = 0;
+$pkgcount = count($pkgs);
+foreach ($pkgs as $pkgname => $pkginfo) {
+    $pkgidx += 1;
 
     // Write the currently processed package to the database
-    $stmt = $pdo->prepare("UPDATE updater SET package=:pkg WHERE id=1;");
-    $stmt->execute(['pkg' => $pkg]);
+    $stmt = $pdo->prepare("UPDATE updater SET package=:pkgname WHERE id=1;");
+    $stmt->execute(['pkgname' => "$pkgname ($pkgidx of $pkgcount)"]);
 
-    // Get package info for the current package
-    $pkginfo = shell_exec("$broexec info $pkg --json --nolocal --allvers");
-    $pkgjson = json_decode($pkginfo, false);
-
-    // Verify package name from JSON is correct
-    $pkgname = key($pkgjson);
-    if (is_null($pkgname)) {
-        echo "Error. No package name in JSON for '$pkg'. Skipping.\n";
-        continue;
-    }
-    if ($pkg != $pkgname) {
-        echo "Error. Mismatched package name in JSON for '$pkg'. Skipping.\n";
-        continue;
-    }
-
-    // Get the package URL
-    if (property_exists($pkgjson->$pkg, 'url')) {
-        $pkgurl = $pkgjson->$pkg->url;
-    } else { 
-        echo "Error. No URL IN JSON for '$pkg'. Skipping.\n";
-        continue;
-    }
-
-    // Use $pkgurl to fetch the GitHub README file for the package.
-    // https://developer.github.com/v3/repos/contents/#get-the-readme
-    $apiurl = preg_replace('|github.com/|', 'api.github.com/repos/', $pkgurl);
-    $apiurl .= '/readme';
-    $readme = false;
-    $ch = curl_init();
-    if ($ch !== false) {
-        curl_setopt($ch, CURLOPT_URL, $apiurl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'curl');
-        curl_setopt($ch, CURLOPT_HTTPHEADER, 
-            array("Authorization: token $githubtoken"));
-        $output = curl_exec($ch);
-        if (!empty($output)) {
-            $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            if ($httpcode == 200) {
-                $readmejson = json_decode($output, false);
-                if (property_exists($readmejson, 'content')) {
-                    $readme = base64_decode($readmejson->content);
-                }
-            }
-        }
-        curl_close($ch);
+    // Remove the currently processed package from the list of
+    // database packages. What is left at the end is extra to be deleted.
+    if (($idx = array_search($pkgname, $datapkgs)) !== false) {
+        unset($datapkgs[$idx]);
     }
 
     // Get the database ID for the package (if any)
     $pkgid = '';
-    $stmt = $pdo->prepare("SELECT id FROM packages WHERE name=:pkg;");
-    $stmt->execute(['pkg' => $pkg]);
+    $stmt = $pdo->prepare("SELECT id FROM packages WHERE name=:pkgname;");
+    $stmt->execute(['pkgname' => $pkgname]);
     if ($stmt->rowCount() > 0) { // Already in the database, so update it.
+        echo "Updating package '$pkgname' ($pkgidx of $pkgcount)\n";
         $row = $stmt->fetch();
         $pkgid = $row['id'];
         $stmt = $pdo->prepare("UPDATE packages SET url=:pkgurl, " .
-            "readme=:readme, modified=now() WHERE name=:pkg;");
+            "readme=:readme, modified=now() WHERE name=:pkgname;");
         $stmt->execute([
-            'pkg'    => $pkg, 
-            'pkgurl' => $pkgurl, 
-            'readme' => $readme
+            'pkgname' => $pkgname,
+            'pkgurl'  => $pkginfo['url'],
+            'readme'  => $pkginfo['readme']
         ]);
     } else { // Package doesn't exist in the database. Insert it and get ID.
+        echo "Adding package '$pkgname' ($pkgidx of $pkgcount)\n";
         $stmt = $pdo->prepare("INSERT INTO packages " .
-            "VALUES(uuid(), :pkg, :pkgurl, :readme, now(), now());");
+            "VALUES(uuid(), :pkgname, :pkgurl, :readme, now(), now());");
         $stmt->execute([
-            'pkg'    => $pkg, 
-            'pkgurl' => $pkgurl, 
-            'readme' => $readme
+            'pkgname' => $pkgname,
+            'pkgurl'  => $pkginfo['url'],
+            'readme'  => $pkginfo['readme']
         ]);
-        $stmt = $pdo->prepare("SELECT id FROM packages WHERE name=:pkg;");
-        $stmt->execute(['pkg' => $pkg]);
-        if ($stmt->rowCount() > 0) { 
+        $stmt = $pdo->prepare("SELECT id FROM packages WHERE name=:pkgname;");
+        $stmt->execute(['pkgname' => $pkgname]);
+        if ($stmt->rowCount() > 0) {
             $row = $stmt->fetch();
             $pkgid = $row['id'];
         } else {
@@ -159,77 +254,22 @@ foreach ($pkgarray as $pkg) {
         }
     }
     if (empty($pkgid)) {
-        exit("Error. Could not get ID for '$pkg'.\n");
+        exit("Error. Could not get ID for '$pkgname'.\n");
     }
 
-    // Get all versions of metadatas for the package
-    if (property_exists($pkgjson->$pkg, 'metadata')) {
-        $versions = array_keys(get_object_vars($pkgjson->$pkg->metadata));
-        foreach ($versions as $version) {
-            echo "    Processing metadata version '$version'.\n";
-
-            $description = null;
-            $script_dir = null;
-            $plugin_dir = null;
-            $build_command = null;
-            $user_vars = null;
-            $test_command = null;
-            $config_files = null;
-            $depends = null;
-            $external_depends = null;
-            $suggests = null;
-            $tags = null;
-            if (property_exists($pkgjson->$pkg->metadata, $version)) {
-                $description = (property_exists(
-                    $pkgjson->$pkg->metadata->$version, 'description'
-                ) ? $pkgjson->$pkg->metadata->$version->description : null);
-                $script_dir = (property_exists(
-                    $pkgjson->$pkg->metadata->$version, 'script_dir'
-                ) ? $pkgjson->$pkg->metadata->$version->script_dir : null);
-                $plugin_dir = (property_exists(
-                    $pkgjson->$pkg->metadata->$version, 'plugin_dir'
-                ) ? $pkgjson->$pkg->metadata->$version->plugin_dir : null);
-                $build_command = (property_exists(
-                    $pkgjson->$pkg->metadata->$version, 'build_command'
-                ) ? $pkgjson->$pkg->metadata->$version->build_command : null);
-                $user_vars = (property_exists(
-                    $pkgjson->$pkg->metadata->$version, 'user_vars'
-                ) ? $pkgjson->$pkg->metadata->$version->user_vars : null);
-                $test_command = (property_exists(
-                    $pkgjson->$pkg->metadata->$version, 'test_command'
-                ) ? $pkgjson->$pkg->metadata->$version->test_command : null);
-                $config_files = (property_exists(
-                    $pkgjson->$pkg->metadata->$version, 'config_files'
-                ) ? $pkgjson->$pkg->metadata->$version->config_files : null);
-                $depends = (property_exists(
-                    $pkgjson->$pkg->metadata->$version, 'depends'
-                ) ? $pkgjson->$pkg->metadata->$version->depends : null);
-                $external_depends = (property_exists(
-                    $pkgjson->$pkg->metadata->$version, 'external_depends'
-                ) ? $pkgjson->$pkg->metadata->$version->external_depends : null);
-                $suggests = (property_exists(
-                    $pkgjson->$pkg->metadata->$version, 'suggests'
-                ) ? $pkgjson->$pkg->metadata->$version->suggests : null);
-                $tags = (property_exists(
-                    $pkgjson->$pkg->metadata->$version, 'tags'
-                ) ? $pkgjson->$pkg->metadata->$version->tags : null);
-            }
-
-            // Some fields may need massaging to possibly convert from
-            // object to string 
-            $user_vars = objToStr($user_vars);
-            $depends = objToStr($depends);
-            $external_depends = objToStr($external_depends);
-            $suggests = objToStr($suggests);
-
+    // Process all versions of metadatas for the package
+    if (array_key_exists('metadata', $pkginfo)) {
+        foreach ($pkginfo['metadata'] as $version => $verinfo) {
             // Get the database ID for the metadata version (if any)
             $metaid = '';
             $stmt = $pdo->prepare("SELECT id FROM metadatas WHERE package_id=:pkgid and version=:version;");
             $stmt->execute(['pkgid' => $pkgid, 'version' => $version]);
             if ($stmt->rowCount() > 0) { // Already in the database, so update it.
+                echo "    Updating metadata version '$version'.\n";
                 $row = $stmt->fetch();
                 $metaid = $row['id'];
-                $stmt = $pdo->prepare("UPDATE metadatas SET " .
+                $stmt = $pdo->prepare(
+                    "UPDATE metadatas SET " .
                     "description=:description, " .
                     "script_dir=:script_dir, " .
                     "plugin_dir=:plugin_dir, " .
@@ -244,43 +284,45 @@ foreach ($pkgarray as $pkg) {
                     "WHERE id=:metaid;"
                 );
                 $stmt->execute([
-                    'description' => $description,
-                    'script_dir' => $script_dir,
-                    'plugin_dir' => $plugin_dir,
-                    'build_command' => $build_command,
-                    'user_vars' => $user_vars,
-                    'test_command' => $test_command,
-                    'config_files' => $config_files,
-                    'depends' => $depends,
-                    'external_depends' => $external_depends,
-                    'suggests' => $suggests,
+                    'description' => $verinfo['description'],
+                    'script_dir' => $verinfo['script_dir'],
+                    'plugin_dir' => $verinfo['plugin_dir'],
+                    'build_command' => $verinfo['build_command'],
+                    'user_vars' => $verinfo['user_vars'],
+                    'test_command' => $verinfo['test_command'],
+                    'config_files' => $verinfo['config_files'],
+                    'depends' => $verinfo['depends'],
+                    'external_depends' => $verinfo['external_depends'],
+                    'suggests' => $verinfo['suggests'],
                     'metaid' => $metaid
                 ]);
             } else { // Package doesn't exist in the database. Insert it and get ID.
-
-                $stmt = $pdo->prepare("INSERT INTO metadatas " .
+                echo "    Adding metadata version '$version'.\n";
+                $stmt = $pdo->prepare(
+                    "INSERT INTO metadatas " .
                     "VALUES(uuid(), :pkgid, :version, " .
                     ":description, :script_dir, :plugin_dir, :build_command, " .
                     ":user_vars, :test_command, :config_files, " .
-                    ":depends, :external_depends, :suggests, now(), now());");
+                    ":depends, :external_depends, :suggests, now(), now());"
+                );
                 $stmt->execute([
                     'pkgid' => $pkgid,
                     'version' => $version,
-                    'description' => $description,
-                    'script_dir' => $script_dir,
-                    'plugin_dir' => $plugin_dir,
-                    'build_command' => $build_command,
-                    'user_vars' => $user_vars,
-                    'test_command' => $test_command,
-                    'config_files' => $config_files,
-                    'depends' => $depends,
-                    'external_depends' => $external_depends,
-                    'suggests' => $suggests
+                    'description' => $verinfo['description'],
+                    'script_dir' => $verinfo['script_dir'],
+                    'plugin_dir' => $verinfo['plugin_dir'],
+                    'build_command' => verinfo['$build_command'],
+                    'user_vars' => $verinfo['user_vars'],
+                    'test_command' => $verinfo['test_command'],
+                    'config_files' => $verinfo['config_files'],
+                    'depends' => $verinfo['depends'],
+                    'external_depends' => $verinfo['external_depends'],
+                    'suggests' => $verinfo['suggests']
                 ]);
                 $stmt = $pdo->prepare("SELECT id FROM metadatas " .
                     "WHERE package_id=:pkgid AND version=:version;");
                 $stmt->execute(['pkgid' => $pkgid, 'version' => $version]);
-                if ($stmt->rowCount() > 0) { 
+                if ($stmt->rowCount() > 0) {
                     $row = $stmt->fetch();
                     $metaid = $row['id'];
                 } else {
@@ -292,25 +334,27 @@ foreach ($pkgarray as $pkg) {
             }
 
             // Process any tags for the metadata version
-            if (!is_null($tags) && (strlen($tags) > 0)) {
+            if (!is_null($verinfo['tags']) && (strlen($verinfo['tags']) > 0)) {
                 // Split tags on commas
-                $tagsarray = array_map('trim', explode(',', $tags));
+                $tagsarray = array_map('trim', explode(',', $verinfo['tags']));
                 foreach ($tagsarray as $tag) {
                     // Get the database ID for the tag (if any)
                     $tagid = '';
                     $stmt = $pdo->prepare("SELECT id FROM tags WHERE name=:tag;");
                     $stmt->execute(['tag' => $tag]);
-                    if ($stmt->rowCount() > 0) { 
+                    if ($stmt->rowCount() > 0) {
+                        echo "        Updating tag '$tag'\n";
                         $row = $stmt->fetch();
                         $tagid = $row['id'];
                     } else { // Tag doesn't exist. Insert it and get ID.
+                        echo "        Adding tag '$tag'\n";
                         $stmt = $pdo->prepare("INSERT INTO tags " .
                             "VALUES(uuid(), :tag, now(), now());");
                         $stmt->execute(['tag' => $tag]);
                         $stmt = $pdo->prepare("SELECT id FROM tags " .
                             "WHERE name=:tag;");
                         $stmt->execute(['tag' => $tag]);
-                        if ($stmt->rowCount() > 0) { 
+                        if ($stmt->rowCount() > 0) {
                             $row = $stmt->fetch();
                             $tagid = $row['id'];
                         } else {
@@ -321,16 +365,24 @@ foreach ($pkgarray as $pkg) {
                         exit("Error. Could not get ID for tag '$tag'.\n");
                     }
 
-                    echo "        Processing tag '$tag'\n";
-
                     // Link the tag to the metadata version
                     $stmt = $pdo->prepare("INSERT IGNORE INTO metadatas_tags " .
                         "VALUES(:metaid, :tagid);");
                     $stmt->execute(['metaid' => $metaid, 'tagid' => $tagid]);
                 }
             }
-
         }
+    }
+}
+
+// If there are any remaining packages in the original $datapkgs array,
+// then these were not found in the current bro-pkg listing and
+// should be deleted from the database.
+if (count($datapkgs) > 0) {
+    foreach ($datapkgs as $pkgname) {
+        echo "Deleting $pkgname from database.\n";
+        $stmt = $pdo->prepare('DELETE FROM packages WHERE name=:pkgname');
+        $stmt->execute(['pkgname' => $pkgname]);
     }
 }
 
@@ -338,7 +390,8 @@ foreach ($pkgarray as $pkg) {
 $stmt = $pdo->prepare("UPDATE updater SET status='idle', ended=now(), package=NULL WHERE id=1;");
 $stmt->execute();
 
-function objToStr($obj) {
+function objToStr($obj)
+{
     $retval = null;
     if (!is_null($obj)) {
         if (is_object($obj)) {
@@ -355,12 +408,11 @@ function objToStr($obj) {
     return $retval;
 }
 
-function searchEnvFile($envvalue, $envlines) {
+function searchEnvFile($envvalue, $envlines)
+{
     $retval = '';
-    $linematch = @array_values(preg_grep(
-        '/export ' . $envvalue . '\s*=\s*".*"/', $envlines))[0];
-    if (preg_match(
-        '/export ' . $envvalue . '\s*=\s*"(.*)"/', $linematch, $matches)) {
+    $linematch = @array_values(preg_grep('/export ' . $envvalue . '\s*=\s*".*"/', $envlines))[0];
+    if (preg_match('/export ' . $envvalue . '\s*=\s*"(.*)"/', $linematch, $matches)) {
         $retval = $matches[1];
     }
     if (strlen($retval) == 0) {
