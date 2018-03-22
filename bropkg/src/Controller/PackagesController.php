@@ -65,11 +65,13 @@ class PackagesController extends AppController
             ]);
         }
 
+        $packages = $this->Packages->find();
         $package = $this->Packages->get($id, [
             'contain' => ['Metadatas.Tags']
         ]);
 
         $this->set('package', $package);
+        $this->set('packages', $packages);
         $this->set('_serialize', ['package']);
     }
 }

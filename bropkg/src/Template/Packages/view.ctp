@@ -2,6 +2,7 @@
 /**
   * @var \App\View\AppView $this
   * @var \App\Model\Entity\Package $package
+  * @var \App\Model\Entity\Package[]|\Cake\Collection\CollectionInterface $packages
   */
 
 function strNotNull($str) {
@@ -128,19 +129,100 @@ function strClean($str) {
                     <?php if (strNotNull($metadata->depends)): ?>
                     <div class="row">
                         <h4><?= __('Depends :') ?></h4>
-                        <?= $this->Text->autoParagraph(h($metadata->depends)); ?>
+                        <?php
+                        $depends = '';
+                        $thelist = explode(PHP_EOL, $metadata->depends);
+                        foreach ($thelist as $line) {
+                            if (preg_match('%^(https?://[^ ]*)(.*)%', $line, $matches)) {
+                                $depends .= $this->Html->link($matches[1], $matches[1]) . $matches[2];
+                            } elseif (preg_match('%^([^ ]*/[^ ]*/[^ ]*)(.*)%', $line, $matches)) {
+                                $found = false;
+                                foreach($packages as $pkg) {
+                                    if ($pkg->name == $matches[1]) {
+                                        $found = true;
+                                        $depends .= $this->Html->link(
+                                            $pkg->name,
+                                            ['action' => 'view', $pkg->id])
+                                            . $matches[2];
+                                        break;
+                                    }
+                                }
+                                if (!$found) {
+                                    $depends .= $line;
+                                }
+                            } else {
+                                $depends .= $line;
+                            }
+                            $depends .= "\n";
+                        }
+                        echo $this->Text->autoParagraph($depends);
+                        ?>
                     </div>
                     <?php endif; ?>
                     <?php if (strNotNull($metadata->external_depends)): ?>
                     <div class="row">
                         <h4><?= __('External Depends :') ?></h4>
-                        <?= $this->Text->autoParagraph(h($metadata->external_depends)); ?>
+                        <?php
+                        $ext_depends = '';
+                        $thelist = explode(PHP_EOL, $metadata->external_depends);
+                        foreach ($thelist as $line) {
+                            if (preg_match('%^(https?://[^ ]*)(.*)%', $line, $matches)) {
+                                $ext_depends .= $this->Html->link($matches[1], $matches[1]) . $matches[2];
+                            } elseif (preg_match('%^([^ ]*/[^ ]*/[^ ]*)(.*)%', $line, $matches)) {
+                                $found = false;
+                                foreach($packages as $pkg) {
+                                    if ($pkg->name == $matches[1]) {
+                                        $found = true;
+                                        $ext_depends .= $this->Html->link(
+                                            $pkg->name,
+                                            ['action' => 'view', $pkg->id])
+                                            . $matches[2];
+                                        break;
+                                    }
+                                }
+                                if (!$found) {
+                                    $ext_depends .= $line;
+                                }
+                            } else {
+                                $ext_depends .= $line;
+                            }
+                            $ext_depends .= "\n";
+                        }
+                        echo $this->Text->autoParagraph($ext_depends);
+                        ?>
                     </div>
                     <?php endif; ?>
                     <?php if (strNotNull($metadata->suggests)): ?>
                     <div class="row">
                         <h4><?= __('Suggests :') ?></h4>
-                        <?= $this->Text->autoParagraph(h($metadata->suggests)); ?>
+                        <?php
+                        $suggests = '';
+                        $thelist = explode(PHP_EOL, $metadata->suggests);
+                        foreach ($thelist as $line) {
+                            if (preg_match('%^(https?://[^ ]*)(.*)%', $line, $matches)) {
+                                $suggests .= $this->Html->link($matches[1], $matches[1]) . $matches[2];
+                            } elseif (preg_match('%^([^ ]*/[^ ]*/[^ ]*)(.*)%', $line, $matches)) {
+                                $found = false;
+                                foreach($packages as $pkg) {
+                                    if ($pkg->name == $matches[1]) {
+                                        $found = true;
+                                        $suggests .= $this->Html->link(
+                                            $pkg->name,
+                                            ['action' => 'view', $pkg->id])
+                                            . $matches[2];
+                                        break;
+                                    }
+                                }
+                                if (!$found) {
+                                    $suggests .= $line;
+                                }
+                            } else {
+                                $suggests .= $line;
+                            }
+                            $suggests .= "\n";
+                        }
+                        echo $this->Text->autoParagraph($suggests);
+                        ?>
                     </div>
                     <?php endif; ?>
                     <?php if (!empty($metadata->tags)): ?>
