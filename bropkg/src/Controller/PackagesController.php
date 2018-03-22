@@ -14,7 +14,7 @@ class PackagesController extends AppController
 {
     public $paginate = [
         'order' => [
-            'Packages.name' => 'asc'
+            'Packages.short_name' => 'asc'
         ]
     ];
 

@@ -29,6 +29,8 @@ CREATE TABLE users (
 CREATE TABLE packages (
     id CHAR(36) PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
+    author VARCHAR(255) NOT NULL,
+    short_name VARCHAR(255) NOT NULL,
     url VARCHAR(255),
     readme MEDIUMTEXT,
     created DATETIME,

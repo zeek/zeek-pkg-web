@@ -37,7 +37,7 @@ function strClean($str) {
 <?= $this->Html->scriptend(); ?>
 
 <div class="packages view large-9 medium-8 columns content">
-    <h3><?= h($package->basename) ?></h3>
+    <h3><?= h($package->short_name) ?></h3>
 
     <div class="row">
          <?= $this->Html->link($package->url, $package->url, ['target' => '_blank']) ?>

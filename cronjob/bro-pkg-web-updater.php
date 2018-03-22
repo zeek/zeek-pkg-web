@@ -220,6 +220,11 @@ foreach ($pkgs as $pkgname => $pkginfo) {
         unset($datapkgs[$idx]);
     }
 
+    // Extract pacakge author and short_name from pkgname
+    $parts = explode("/", $pkgname);
+    $pkgauthor = $parts[1];
+    $pkgshort = $parts[2];
+
     // Get the database ID for the package (if any)
     $pkgid = '';
     $stmt = $pdo->prepare("SELECT id FROM packages WHERE name=:pkgname;");
@@ -228,21 +233,27 @@ foreach ($pkgs as $pkgname => $pkginfo) {
         echo "Updating package '$pkgname' ($pkgidx of $pkgcount)\n";
         $row = $stmt->fetch();
         $pkgid = $row['id'];
-        $stmt = $pdo->prepare("UPDATE packages SET url=:pkgurl, " .
+        $stmt = $pdo->prepare("UPDATE packages SET author=:pkgauthor, " .
+            "short_name=:pkgshort, url=:pkgurl, " .
             "readme=:readme, modified=now() WHERE name=:pkgname;");
         $stmt->execute([
-            'pkgname' => $pkgname,
-            'pkgurl'  => $pkginfo['url'],
-            'readme'  => $pkginfo['readme']
+            'pkgname'   => $pkgname,
+            'pkgauthor' => $pkgauthor,
+            'pkgshort'  => $pkgshort,
+            'pkgurl'    => $pkginfo['url'],
+            'readme'    => $pkginfo['readme']
         ]);
     } else { // Package doesn't exist in the database. Insert it and get ID.
         echo "Adding package '$pkgname' ($pkgidx of $pkgcount)\n";
         $stmt = $pdo->prepare("INSERT INTO packages " .
-            "VALUES(uuid(), :pkgname, :pkgurl, :readme, now(), now());");
+            "VALUES(uuid(), :pkgname, :pkgauthor, :pkgshort, :pkgurl, " .
+            ":readme, now(), now());");
         $stmt->execute([
-            'pkgname' => $pkgname,
-            'pkgurl'  => $pkginfo['url'],
-            'readme'  => $pkginfo['readme']
+            'pkgname'   => $pkgname,
+            'pkgauthor' => $pkgauthor,
+            'pkgshort'  => $pkgshort,
+            'pkgurl'    => $pkginfo['url'],
+            'readme'    => $pkginfo['readme']
         ]);
         $stmt = $pdo->prepare("SELECT id FROM packages WHERE name=:pkgname;");
         $stmt->execute(['pkgname' => $pkgname]);

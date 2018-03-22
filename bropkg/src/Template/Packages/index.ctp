@@ -18,7 +18,7 @@
     <h3><?= __('Packages') ?></h3>
     <?php foreach ($packages as $package): ?>
     <div class="packagebox">
-        <h4> <?= $this->Html->link($package->basename, ['action' => 'view', $package->id]) ?>
+        <h4> <?= $this->Html->link($package->short_name, ['action' => 'view', $package->id]) ?>
         </h4>
         <p>
             By <?= $this->Html->link($package->author, ['action' => 'index', '?' =>  ['q' => $package->author]]) ?>
