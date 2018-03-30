@@ -87,9 +87,53 @@ foreach ($pkgarray as $pkg) {
         if (!empty($output)) {
             $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             if ($httpcode == 200) {
-                $readmejson = json_decode($output, false);
-                if (property_exists($readmejson, 'content')) {
-                    $pkgs[$pkg]['readme'] = base64_decode($readmejson->content);
+                $json = json_decode($output, false);
+                if (property_exists($json, 'content')) {
+                    $pkgs[$pkg]['readme'] = base64_decode($json->content);
+                }
+            }
+        }
+        curl_close($ch);
+    }
+
+    // Use $pkgurl to fetch the GitHub stats for the package.
+    // https://developer.github.com/v3/repos/#get
+    $apiurl = preg_replace('|github.com/|', 'api.github.com/repos/', $pkgurl);
+    $pkgs[$pkg]['subscribers_count'] = 0;
+    $pkgs[$pkg]['stargazers_count'] = 0;
+    $pkgs[$pkg]['open_issues_count'] = 0;
+    $pkgs[$pkg]['forks_count'] = 0;
+    $pkgs[$pkg]['pushed_at'] = '';
+    $ch = curl_init();
+    if ($ch !== false) {
+        curl_setopt($ch, CURLOPT_URL, $apiurl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'curl');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array("Authorization: token $githubtoken"));
+        $output = curl_exec($ch);
+        if (!empty($output)) {
+            $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            if ($httpcode == 200) {
+                $json = json_decode($output, false);
+                if (property_exists($json, 'subscribers_count')) {
+                    $pkgs[$pkg]['subscribers_count'] = $json->subscribers_count;
+                }
+                if (property_exists($json, 'stargazers_count')) {
+                    $pkgs[$pkg]['stargazers_count'] = $json->stargazers_count;
+                }
+                if (property_exists($json, 'open_issues_count')) {
+                    $pkgs[$pkg]['open_issues_count'] = $json->open_issues_count;
+                }
+                if (property_exists($json, 'forks_count')) {
+                    $pkgs[$pkg]['forks_count'] = $json->forks_count;
+                }
+                if (property_exists($json, 'pushed_at')) {
+                    $pkgs[$pkg]['pushed_at'] = date("Y-m-d H:i:s", strtotime($json->pushed_at));
                 }
             }
         }
@@ -233,27 +277,48 @@ foreach ($pkgs as $pkgname => $pkginfo) {
         echo "Updating package '$pkgname' ($pkgidx of $pkgcount)\n";
         $row = $stmt->fetch();
         $pkgid = $row['id'];
-        $stmt = $pdo->prepare("UPDATE packages SET author=:pkgauthor, " .
-            "short_name=:pkgshort, url=:pkgurl, " .
-            "readme=:readme, modified=now() WHERE name=:pkgname;");
+        $stmt = $pdo->prepare("UPDATE packages SET " .
+            "author=:pkgauthor, " .
+            "short_name=:pkgshort, " .
+            "url=:pkgurl, " .
+            "readme=:readme, " .
+            "subscribers_count=:subscribers_count, " .
+            "stargazers_count=:stargazers_count, " .
+            "open_issues_count=:open_issues_count, " .
+            "forks_count=:forks_count, " .
+            "pushed_at=:pushed_at, " .
+            "modified=now() " .
+            "WHERE name=:pkgname;");
+
         $stmt->execute([
             'pkgname'   => $pkgname,
             'pkgauthor' => $pkgauthor,
             'pkgshort'  => $pkgshort,
             'pkgurl'    => $pkginfo['url'],
-            'readme'    => $pkginfo['readme']
+            'readme'    => $pkginfo['readme'],
+            'subscribers_count' => $pkginfo['subscribers_count'],
+            'stargazers_count'  => $pkginfo['stargazers_count'],
+            'open_issues_count' => $pkginfo['open_issues_count'],
+            'forks_count'       => $pkginfo['forks_count'],
+            'pushed_at'         => $pkginfo['pushed_at']
         ]);
     } else { // Package doesn't exist in the database. Insert it and get ID.
         echo "Adding package '$pkgname' ($pkgidx of $pkgcount)\n";
         $stmt = $pdo->prepare("INSERT INTO packages " .
             "VALUES(uuid(), :pkgname, :pkgauthor, :pkgshort, :pkgurl, " .
-            ":readme, now(), now());");
+            ":readme, :subscribers_count, :stargazers_count, " .
+            ":open_issues_count, :forks_count, :pushed_at, now(), now());");
         $stmt->execute([
             'pkgname'   => $pkgname,
             'pkgauthor' => $pkgauthor,
             'pkgshort'  => $pkgshort,
             'pkgurl'    => $pkginfo['url'],
-            'readme'    => $pkginfo['readme']
+            'readme'    => $pkginfo['readme'],
+            'subscribers_count' => $pkginfo['subscribers_count'],
+            'stargazers_count'  => $pkginfo['stargazers_count'],
+            'open_issues_count' => $pkginfo['open_issues_count'],
+            'forks_count'       => $pkginfo['forks_count'],
+            'pushed_at'         => $pkginfo['pushed_at']
         ]);
         $stmt = $pdo->prepare("SELECT id FROM packages WHERE name=:pkgname;");
         $stmt->execute(['pkgname' => $pkgname]);

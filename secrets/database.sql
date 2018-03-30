@@ -33,6 +33,11 @@ CREATE TABLE packages (
     short_name VARCHAR(255) NOT NULL,
     url VARCHAR(255),
     readme MEDIUMTEXT,
+    subscribers_count INT DEFAULT 0 NOT NULL,
+    stargazers_count INT DEFAULT 0 NOT NULL,
+    open_issues_count INT DEFAULT 0 NOT NULL,
+    forks_count INT DEFAULT 0 NOT NULL,
+    pushed_at DATETIME,
     created DATETIME,
     modified DATETIME
 );
