@@ -84,7 +84,7 @@ function strClean($str) {
               3H6v5h2V4zm0 6H6v2h2v-2z"/></svg> '.
               $package->open_issues_count . "</a>\n";
         echo '<a href="' . $package->url . '/commit' . '" target="_blank"
-              class="outlinebox">Last Commit ' . 
+              class="outlinebox">Last Push ' . 
               $package->pushed_at . "</a>\n";
         ?>
     </div>
