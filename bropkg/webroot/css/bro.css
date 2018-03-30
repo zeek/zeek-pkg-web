@@ -26,10 +26,15 @@ select.div-toggle {
   margin: 10px;
   padding: 10px;
 }
-
 .packagebox {
     border: 1px solid #ddd;
     border-radius: 3px;
     margin-bottom: 20px;
     padding: 10px 10px 0px 10px;
+}
+a.outlinebox {
+    display:inline-block;
+    border:1px solid #ddd;
+    padding:5px 5px 0px 5px;
+    border-radius:5px;
 }
