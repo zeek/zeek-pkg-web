@@ -10,22 +10,6 @@ SET FOREIGN_KEY_CHECKS=1;
 
 source /var/www/bropkg/config/schema/sessions.sql; 
 
-CREATE TABLE users (
-    id CHAR(36) PRIMARY KEY,
-    username VARCHAR(255) NOT NULL,
-    display_name VARCHAR(255),
-    given_name VARCHAR(255),
-    family_name VARCHAR(255),
-    email VARCHAR(255),
-    affiliation VARCHAR(255),
-    idp VARCHAR(255),
-    idp_name VARCHAR(255),
-    disabled BOOLEAN DEFAULT 0,
-    admin BOOLEAN DEFAULT 0,
-    created DATETIME,
-    modified DATETIME
-);
-
 CREATE TABLE packages (
     id CHAR(36) PRIMARY KEY,
     name VARCHAR(255) NOT NULL,

@@ -12,18 +12,6 @@ function strClean($str) {
     return preg_replace('/[^a-zA-Z0-9]/', '_', $str);
 }
 ?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Navigation') ?></li>
-        <li><?= $this->Html->link(__('Home'), '/') ?></li>
-        <li><?= $this->Html->link(__('Packages List'), ['controller' => 'Packages', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('Tags List'), ['controller' => 'Tags', 'action' => 'index']) ?></li>
-        <?php if ($userAdmin): ?>
-            <li><?= $this->Html->link(__('Users List'), ['controller' => 'Users', 'action' => 'index']) ?></li>
-        <?php endif; ?>
-    </ul>
-</nav>
-
 <?= $this->Html->scriptStart(); ?>
     $(document).on('change', '.div-toggle', function() {
       var target = $(this).data('target');
@@ -36,7 +24,7 @@ function strClean($str) {
     });
 <?= $this->Html->scriptend(); ?>
 
-<div class="packages view large-9 medium-8 columns content">
+<div class="packages view columns content">
     <h3><?= h($package->short_name) ?></h3>
 
     <div class="row">
@@ -91,7 +79,7 @@ function strClean($str) {
 
     <?php if (!empty($package->readme)): ?>
         <p></p>
-        <div class="row">
+        <div class="row outlinebox">
             <article class="markdown-body entry-content">
             <?= $this->Markdown->transform($package->readme); ?>
             </article>
@@ -116,12 +104,12 @@ function strClean($str) {
         ?>
 
         <p></p>
-        <div class="row">
+        <div class="row form-group">
             <h4><?= __('Package Version :') ?></h4>
             <select class="div-toggle" data-target=".metadata-versions">
                 <?php foreach ($versions as $version): ?>
                     <?= '<option value="' . $version . '" data-show="._' . strClean($version) . '"' . 
-                        // (($version == $selected) ? ' selected="selected"' : '') .
+                        (($version == $selected) ? ' selected="selected"' : '') .
                         '>' . $version . '</option>' ?>
                 <?php endforeach; ?>
             </select>
@@ -131,49 +119,49 @@ function strClean($str) {
             <?php foreach ($package->metadatas as $metadata): ?>
                 <?= '<div class="_' . strClean($metadata->version) . ' hide">' ?>
                     <?php if (strNotNull($metadata->description)): ?>
-                    <div class="row">
+                    <div class="row form-group">
                         <h4><?= __('Description :') ?></h4>
                         <?= $this->Text->autoParagraph(h($metadata->description)); ?>
                     </div>
                     <?php endif; ?>
                     <?php if (strNotNull($metadata->script_dir)): ?>
-                    <div class="row">
+                    <div class="row form-group">
                         <h4><?= __('Script Dir :') ?></h4>
                         <?= $this->Text->autoParagraph(h($metadata->script_dir)); ?>
                     </div>
                     <?php endif; ?>
                     <?php if (strNotNull($metadata->plugin_dir)): ?>
-                    <div class="row">
+                    <div class="row form-group">
                         <h4><?= __('Plugin Dir :') ?></h4>
                         <?= $this->Text->autoParagraph(h($metadata->plugin_dir)); ?>
                     </div>
                     <?php endif; ?>
                     <?php if (strNotNull($metadata->build_command)): ?>
-                    <div class="row">
+                    <div class="row form-group">
                         <h4><?= __('Build Command :') ?></h4>
                         <?= $this->Text->autoParagraph(h($metadata->build_command)); ?>
                     </div>
                     <?php endif; ?>
                     <?php if (strNotNull($metadata->user_vars)): ?>
-                    <div class="row">
+                    <div class="row form-group">
                         <h4><?= __('Users Vars :') ?></h4>
                         <?= $this->Text->autoParagraph(h($metadata->user_vars)); ?>
                     </div>
                     <?php endif; ?>
                     <?php if (strNotNull($metadata->test_command)): ?>
-                    <div class="row">
+                    <div class="row form-group">
                         <h4><?= __('Test Command :') ?></h4>
                         <?= $this->Text->autoParagraph(h($metadata->test_command)); ?>
                     </div>
                     <?php endif; ?>
                     <?php if (strNotNull($metadata->config_files)): ?>
-                    <div class="row">
+                    <div class="row form-group">
                         <h4><?= __('Config Files :') ?></h4>
                         <?= $this->Text->autoParagraph(h($metadata->config_files)); ?>
                     </div>
                     <?php endif; ?>
                     <?php if (strNotNull($metadata->depends)): ?>
-                    <div class="row">
+                    <div class="row form-group">
                         <h4><?= __('Depends :') ?></h4>
                         <?php
                         $depends = '';
@@ -206,7 +194,7 @@ function strClean($str) {
                     </div>
                     <?php endif; ?>
                     <?php if (strNotNull($metadata->external_depends)): ?>
-                    <div class="row">
+                    <div class="row form-group">
                         <h4><?= __('External Depends :') ?></h4>
                         <?php
                         $ext_depends = '';
@@ -239,7 +227,7 @@ function strClean($str) {
                     </div>
                     <?php endif; ?>
                     <?php if (strNotNull($metadata->suggests)): ?>
-                    <div class="row">
+                    <div class="row form-group">
                         <h4><?= __('Suggests :') ?></h4>
                         <?php
                         $suggests = '';
@@ -272,7 +260,7 @@ function strClean($str) {
                     </div>
                     <?php endif; ?>
                     <?php if (!empty($metadata->tags)): ?>
-                    <div class="row">
+                    <div class="row form-group">
                         <h4><?= __('Tags :') ?></h4>
                         <?php
                             $num = count($metadata->tags);

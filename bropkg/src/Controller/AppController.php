@@ -27,6 +27,26 @@ use Cake\Event\Event;
  */
 class AppController extends Controller
 {
+    public $helpers = [
+        'Form' => [
+            'className' => 'Bootstrap.Form'
+        ],
+        'Html' => [
+            'className' => 'Bootstrap.Html'
+        ],
+        'Modal' => [
+            'className' => 'Bootstrap.Modal'
+        ],
+        'Navbar' => [
+            'className' => 'Bootstrap.Navbar'
+        ],
+        'Paginator' => [
+            'className' => 'Bootstrap.Paginator'
+        ],
+        'Panel' => [
+            'className' => 'Bootstrap.Panel'
+        ]
+    ];
 
     /**
      * Initialization hook method.
@@ -51,98 +71,8 @@ class AppController extends Controller
         $this->loadComponent('Security');
         $this->loadComponent('Csrf');
 
-        $this->loadComponent('Auth', [
-            'authenticate' => [
-                'Muffin/OAuth2.OAuth',
-            ]
-        ]);
-
         $this->loadComponent('Search.Prg', [
             'actions' => ['index']
         ]);
-
-        // Set up Controller authorization via isAuthorized()
-        $this->Auth->config('authorize', ['Controller']);
-
-        // Allow all actions
-        $this->Auth->allow();
-    }
-
-    /**
-     * Before render callback.
-     *
-     * @param \Cake\Event\Event $event The beforeRender event.
-     * @return \Cake\Http\Response|null|void
-     */
-    public function beforeRender(Event $event)
-    {
-        // Note: These defaults are just to get started quickly with development
-        // and should not be used in production. You should instead set "_serialize"
-        // in each action as required.
-        if (!array_key_exists('_serialize', $this->viewVars) &&
-            in_array($this->response->type(), ['application/json', 'application/xml'])
-        ) {
-            $this->set('_serialize', true);
-        }
-
-        // Get the user's id and display name if authenticated
-        // and make available to the view
-        $session = $this->request->session();
-        $userId = $session->read('Auth.User.id');
-        $userDisplayName = '';
-        $userAdmin = false;
-        $user = null;
-
-        // Get the attributes of the currently logged-in user
-        if (!is_null($userId)) {
-            $this->loadModel('Users');
-            $user = $this->Users->get($userId);
-        }
-
-        // Check if the user has been disabled. If so, log him out.
-        if ((!is_null($user)) &&
-            (isset($user['disabled'])) &&
-            ($user['disabled'])) {
-            $this->Auth->logout();
-            $session->write('Auth.User.id', '');
-            $userId = null;
-            $user = null;
-        }
-
-        if (!is_null($user)) {
-            $userDisplayName = $session->read('Auth.User.display_name');
-            if (strlen($userDisplayName) == 0) {
-                $userDisplayName =
-                    $session->read('Auth.User.given_name') . ' ' .
-                    $session->read('Auth.User.family_name');
-            }
-            if ((isset($user['admin'])) && ($user['admin'] == 1)) {
-                $userAdmin = true;
-            }
-        }
-        $this->set('userId', $userId);
-        $this->set('userDisplayName', $userDisplayName);
-        $this->set('userAdmin', $userAdmin);
-    }
-
-    /**
-     * Check if use is authorized to view pages.
-     *
-     * @param array|\ArrayAccess $user Active user data
-     * @return bool
-     */
-    public function isAuthorized($user = null)
-    {
-        $retval = true;  // Default allow
-
-        if (!is_null($user)) {
-            // Prevent disabled users from doing anything
-            if (isset($user['disabled']) && $user['disabled']) {
-                $retval = false;
-                $this->Auth->logout();
-            }
-        }
-
-        return $retval;
     }
 }

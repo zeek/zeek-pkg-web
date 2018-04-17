@@ -219,31 +219,6 @@ if (Configure::read('debug')) {
 }
 
 /*
- * https://github.com/UseMuffin/OAuth2
- */
-Plugin::load('Muffin/OAuth2');
-Configure::write('Muffin/OAuth2', [
-    'providers' => [
-        'cilogon' => [
-            'className' => 'CILogon\OAuth2\Client\Provider\CILogon',
-            'options' => [
-                'clientId' => env('CILOGON_CLIENT_ID'),
-                'clientSecret' => env('CILOGON_CLIENT_SECRET'),
-                'redirectUri' => env('CILOGON_REDIRECT_URI'),
-                'scope' => ['openid', 'email', 'profile', 'org.cilogon.userinfo'],
-            ],
-            'mapFields' => [
-                'username' => 'sub',
-                'display_name' => 'name',
-            ],
-            // ... add here the usual AuthComponent configuration if needed like fields, etc.
-        ],
-    ],
-]);
-EventManager::instance()->on('Muffin/OAuth2.newUser',
-    [TableRegistry::get('Users'), 'createNewUser']);
-
-/*
  * https://github.com/tanuck/cakephp-markdown
  */
 Plugin::load('Tanuck/Markdown');
@@ -252,3 +227,8 @@ Plugin::load('Tanuck/Markdown');
  * https://github.com/FriendsOfCake/search
  */
 Plugin::load('Search');
+
+/*
+ * https://github.com/Holt59/cakephp3-bootstrap-helpers
+ */
+Plugin::load('Bootstrap');

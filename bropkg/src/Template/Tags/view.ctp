@@ -6,24 +6,12 @@
 
   */
 ?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Navigation') ?></li>
-        <li><?= $this->Html->link(__('Home'), '/') ?></li>
-        <li><?= $this->Html->link(__('Packages List'), ['controller' => 'Packages', 'action' => 'index']) ?></li>
-
-        <li><?= $this->Html->link(__('Tags List'), ['action' => 'index']) ?></li>
-        <?php if ($userAdmin): ?>
-            <li><?= $this->Html->link(__('Users List'), ['controller' => 'Users', 'action' => 'index']) ?></li>
-        <?php endif; ?>
-    </ul>
-</nav>
-<div class="tags view large-9 medium-8 columns content">
+<div class="tags view columns content">
     <h3><?= h($tag->name) ?></h3>
     <div class="related">
         <h4><?= __('Related Packages') ?></h4>
         <?php if (!empty($packages)): ?>
-        <table cellpadding="0" cellspacing="0">
+        <table cellpadding="0" cellspacing="0" class="table">
             <thead>
                 <tr>
                     <th scope="col"><?= $this->Paginator->sort('name') ?></th>

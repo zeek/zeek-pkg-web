@@ -66,19 +66,4 @@ class PagesController extends AppController
             throw new NotFoundException();
         }
     }
-
-    public function isAuthorized($user = null)
-    {
-        $retval = true;  // Default allow
-
-        if (!is_null($user)) {
-            // Prevent disabled users from doing anything
-            if (isset($user['disabled']) && $user['disabled']) {
-                $retval = false;
-                $this->Auth->logout();
-            }
-        }
-
-        return $retval;
-    }
 }

@@ -92,10 +92,3 @@ Router::scope('/', function (RouteBuilder $routes) {
  */
 Plugin::routes();
 
-Router::connect(
-    '/oauth/:provider',
-    ['controller' => 'users' , 'action' => 'login'],
-    ['provider' => implode('|',
-    array_keys(Configure::read('Muffin/OAuth2.providers')))]
-);
-

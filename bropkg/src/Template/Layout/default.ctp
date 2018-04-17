@@ -2,75 +2,66 @@
 $pageDescription = 'Bro Package Manager';
 
 // Save the current page to session so we can redirect if needed
-$this->request->session()->write('lastpage', $this->request->here());
+$lastpage = $this->request->getRequestTarget();
+$this->request->session()->write('lastpage', $lastpage);
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <?= $this->Html->charset() ?>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <?= $this->Html->meta('icon') ?>
     <title>
         <?= $pageDescription ?>:
         <?= $this->fetch('title') ?>
     </title>
-    <?= $this->Html->meta('icon') ?>
 
-    <?= $this->Html->css('base.css') ?>
-    <?= $this->Html->css('cake.css') ?>
-    <?= $this->Html->css('bro.css') ?>
-    <?= $this->Html->css('github.css') ?>
-    <?= $this->Html->css('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'); ?>
-    <?= $this->Html->script(['jquery']) ?>
+    <?= $this->Html->css('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css') ?>
+    <?= $this->Html->css('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css') ?>
+    <?= $this->Html->css('https://assets-cdn.github.com/assets/github-cec46cb7e4a6c4b4c35e2dac77b2196d.css') ?>
+    <?= $this->Html->css('cake') ?>
+    <?= $this->Html->css('bro') ?>
 
-    <?= $this->fetch('meta') ?>
-    <?= $this->fetch('css') ?>
-    <?= $this->fetch('script') ?>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <?= $this->Html->script(['https://code.jquery.com/jquery-3.3.1.min.js']) ?>
+    <?= $this->Html->script(['https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js']) ?>
 </head>
 <body>
-    <nav class="top-bar expanded" data-topbar>
-        <ul class="title-area large-3 medium-4 columns">
-            <li class="name">
-                <h1><?= $this->Html->link($this->fetch('title'),
-                ['controller' => $this->request->params['controller']]) ?></h1>
-            </li>
-        </ul>
-        <div class="top-bar-section">
-            <?= $this->Form->create(null, [
-                'url' => ['controller' => 'Packages', 
-                'action' => 'index'],
-                'valueSources' => ['query']
-            ]); ?>
-                <ul class="left">
-                    <li class="search">
-                    <?= $this->Form->text('q', [
-                    'placeholder' => 'Search...',
-                    'maxlength' => '50',
-                    'size' => '30'
-                    ]); ?>
-                    </li>
-                    <li>
-                    <button type="submit"><i class="fa fa-search"></i></button>
-                    </li>
-                </ul>
-            <?= $this->Form->end(); ?>
-            <ul class="right">
-                <?php if (is_null($userId)): ?>
-                    <li class="libutton">
-                    <?= $this->Html->link('Login', '/oauth/cilogon') ?>
-                    </li>
-                <?php else: ?>
-                    <li class="user">
-                    <?= h($userDisplayName) ?>
-                    </li>
-                    <li class="libutton">
-                    <?= $this->Html->link('Logout', '/users/logout') ?>
-                    </li>
-                <?php endif; ?>
-            </ul>
-        </div>
-    </nav>
+    <?= $this->Navbar->create('<img src="/img/bropkgmgr.png" alt="Bro Package Manager" width="40" style="margin-top:-10px;" />',
+        ['fixed' => 'top', 'fluid' => true]) ?>
+    <?= $this->Navbar->beginMenu() ?>
+    <?= $this->Navbar->link('Packages', ['controller' => 'packages'],
+        ['class' => (preg_match('%^/packages%', $lastpage) ? 'active' : '')]) ?>
+    <?= $this->Navbar->link('Tags', ['controller' => 'tags'],
+        ['class' => (preg_match('%^/tags%', $lastpage) ? 'active' : '')]) ?>
+    <?= $this->Navbar->endMenu() ?>
+    <?= $this->Form->create(null, [
+        'url' => ['controller' => 'Packages', 'action' => 'index'],
+        'valueSources' => ['query'],
+        'class' => 'navbar-form navbar-right'
+        ]) ?>
+    <div class="form-group">
+        <?= $this->Form->text('q', [
+        'placeholder' => 'Search...',
+        'maxlength' => '50',
+        'size' => '30',
+        'class' => 'form-control'
+        ]) ?>
+    </div>
+    <button type="submit" class="btn btn-default"><span class="glyphicon
+        glyphicon-search"></span></button>
+    <?= $this->Form->end() ?>
+    <?= $this->Navbar->end() ?>
+
     <?= $this->Flash->render() ?>
-    <div class="container clearfix">
+    <div class="container">
         <?= $this->fetch('content') ?>
     </div>
     <footer>

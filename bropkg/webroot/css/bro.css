@@ -1,3 +1,9 @@
+body {
+  padding-top: 40px;
+  padding-left: 10px;
+  padding-right: 10px;
+  min-width: 0px;
+}
 li.libutton {
   border: 2px solid white;
   border-radius: 2px;
@@ -12,19 +18,14 @@ li.search {
   line-height: 2.8125rem;
   margin-left: 10px;
 }
-.content h4 {
-  font-size: large;
-  color: teal;
-  display: inline;
-  padding-bottom: 0;
-  border-bottom: none;
-}
 select.div-toggle {
   width: 20%;
 }
 .markdown-body {
   margin: 10px;
   padding: 10px;
+  font-size: 14px;
+  min-width: 0px;
 }
 .packagebox {
     border: 1px solid #ddd;
@@ -32,9 +33,46 @@ select.div-toggle {
     margin-bottom: 20px;
     padding: 10px 10px 0px 10px;
 }
-a.outlinebox {
+a {
+  color: #036;
+}
+.outlinebox {
     display:inline-block;
     border:1px solid #ddd;
     padding:5px 5px 0px 5px;
     border-radius:5px;
+}
+code {
+  color: #000;
+}
+h1,h2,h3,h4,h5,h6 {
+  color: #036;
+}
+.content h1 {
+  color: #036;
+}
+.content h2 {
+  color: #036;
+}
+.content h3 {
+  color: #036;
+}
+.content h4 {
+  color: #036;
+  font-size: large;
+  display: inline;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+.content .related h4 {
+  color: #036;
+}
+.content h5 {
+  color: #036;
+}
+.content h6 {
+  color: #036;
+}
+.row {
+  max-width: 100%;
 }
