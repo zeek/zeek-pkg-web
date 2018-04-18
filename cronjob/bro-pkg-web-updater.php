@@ -93,7 +93,7 @@ foreach ($pkgarray as $pkg) {
                     $pkgs[$pkg]['readme'] = base64_decode($json->content);
                 }
                 if (property_exists($json, 'name')) {
-                    $pkgs[$pkg]['readme_name'] = base64_decode($json->name);
+                    $pkgs[$pkg]['readme_name'] = $json->name;
                 }
             }
         }
