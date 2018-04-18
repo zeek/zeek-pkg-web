@@ -13,7 +13,8 @@
         "josegonzalez/dotenv": "2.*",
         "tanuck/cakephp-markdown": "^0.1.0",
         "friendsofcake/search": "^4.2",
-        "holt59/cakephp3-bootstrap-helpers": "dev-master"
+        "holt59/cakephp3-bootstrap-helpers": "dev-master",
+        "gregwar/rst": "^1.0"
     },
     "require-dev": {
         "psy/psysh": "@stable",

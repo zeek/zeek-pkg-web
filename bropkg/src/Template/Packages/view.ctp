@@ -77,11 +77,15 @@ function strClean($str) {
         ?>
     </div>
 
-    <?php if (!empty($package->readme)): ?>
+    <?php if ((!empty($package->readme)) && (!empty($package->readme_name))): ?>
         <p></p>
         <div class="row outlinebox">
             <article class="markdown-body entry-content">
-            <?= $this->Markdown->transform($package->readme); ?>
+            <?php if (preg_match('/\.rst$/', $package->readme_name)): ?>
+                <?= $this->RstMarkup->transform($package->readme); ?>
+            <?php else: ?>
+                <?= $this->Markdown->transform($package->readme); ?>
+            <?php endif; ?>
             </article>
         </div>
     <?php endif; ?>
