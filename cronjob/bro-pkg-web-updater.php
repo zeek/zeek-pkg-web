@@ -72,6 +72,7 @@ foreach ($pkgarray as $pkg) {
     $apiurl = preg_replace('|github.com/|', 'api.github.com/repos/', $pkgurl);
     $apiurl .= '/readme';
     $pkgs[$pkg]['readme'] = false;
+    $pkgs[$pkg]['readme_name'] = null;
     $ch = curl_init();
     if ($ch !== false) {
         curl_setopt($ch, CURLOPT_URL, $apiurl);
@@ -90,6 +91,9 @@ foreach ($pkgarray as $pkg) {
                 $json = json_decode($output, false);
                 if (property_exists($json, 'content')) {
                     $pkgs[$pkg]['readme'] = base64_decode($json->content);
+                }
+                if (property_exists($json, 'name')) {
+                    $pkgs[$pkg]['readme_name'] = base64_decode($json->name);
                 }
             }
         }
@@ -282,6 +286,7 @@ foreach ($pkgs as $pkgname => $pkginfo) {
             "short_name=:pkgshort, " .
             "url=:pkgurl, " .
             "readme=:readme, " .
+            "readme_name=:readme_name, " .
             "subscribers_count=:subscribers_count, " .
             "stargazers_count=:stargazers_count, " .
             "open_issues_count=:open_issues_count, " .
@@ -291,11 +296,12 @@ foreach ($pkgs as $pkgname => $pkginfo) {
             "WHERE name=:pkgname;");
 
         $stmt->execute([
-            'pkgname'   => $pkgname,
-            'pkgauthor' => $pkgauthor,
-            'pkgshort'  => $pkgshort,
-            'pkgurl'    => $pkginfo['url'],
-            'readme'    => $pkginfo['readme'],
+            'pkgname'           => $pkgname,
+            'pkgauthor'         => $pkgauthor,
+            'pkgshort'          => $pkgshort,
+            'pkgurl'            => $pkginfo['url'],
+            'readme'            => $pkginfo['readme'],
+            'readme_name'       => $pkginfo['readme_name'],
             'subscribers_count' => $pkginfo['subscribers_count'],
             'stargazers_count'  => $pkginfo['stargazers_count'],
             'open_issues_count' => $pkginfo['open_issues_count'],
@@ -306,14 +312,15 @@ foreach ($pkgs as $pkgname => $pkginfo) {
         echo "Adding package '$pkgname' ($pkgidx of $pkgcount)\n";
         $stmt = $pdo->prepare("INSERT INTO packages " .
             "VALUES(uuid(), :pkgname, :pkgauthor, :pkgshort, :pkgurl, " .
-            ":readme, :subscribers_count, :stargazers_count, " .
+            ":readme, :readme_name, :subscribers_count, :stargazers_count, " .
             ":open_issues_count, :forks_count, :pushed_at, now(), now());");
         $stmt->execute([
-            'pkgname'   => $pkgname,
-            'pkgauthor' => $pkgauthor,
-            'pkgshort'  => $pkgshort,
-            'pkgurl'    => $pkginfo['url'],
-            'readme'    => $pkginfo['readme'],
+            'pkgname'           => $pkgname,
+            'pkgauthor'         => $pkgauthor,
+            'pkgshort'          => $pkgshort,
+            'pkgurl'            => $pkginfo['url'],
+            'readme'            => $pkginfo['readme'],
+            'readme_name'       => $pkginfo['readme_name'],
             'subscribers_count' => $pkginfo['subscribers_count'],
             'stargazers_count'  => $pkginfo['stargazers_count'],
             'open_issues_count' => $pkginfo['open_issues_count'],

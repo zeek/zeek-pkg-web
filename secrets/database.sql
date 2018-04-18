@@ -17,6 +17,7 @@ CREATE TABLE packages (
     short_name VARCHAR(255) NOT NULL,
     url VARCHAR(255),
     readme MEDIUMTEXT,
+    readme_name VARCHAR(255),
     subscribers_count INT DEFAULT 0 NOT NULL,
     stargazers_count INT DEFAULT 0 NOT NULL,
     open_issues_count INT DEFAULT 0 NOT NULL,
