@@ -33,6 +33,7 @@ select.div-toggle {
     border-radius: 3px;
     margin-bottom: 20px;
     padding: 10px 10px 0px 10px;
+    background-color: white;
 }
 a {
   color: #036;
@@ -42,6 +43,7 @@ a {
     border:1px solid #ddd;
     padding:5px 5px 0px 5px;
     border-radius:5px;
+    background-color: white;
 }
 code {
   color: #000;
