@@ -34,7 +34,7 @@ $this->request->session()->write('lastpage', $lastpage);
     <?= $this->Html->script(['https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js']) ?>
 </head>
 <body>
-    <?= $this->Navbar->create('<img src="/img/bropkgmgr.png" alt="Bro Package Manager" width="40" style="margin-top:-10px;" />',
+    <?= $this->Navbar->create('<img src="/img/bropkgmgr.png" alt="Bro Package Manager" width="40" style="margin-top:-10px;" title="Home" />',
         ['fixed' => 'top', 'fluid' => true]) ?>
     <?= $this->Navbar->beginMenu() ?>
     <?= $this->Navbar->link('Packages', ['controller' => 'packages'],

@@ -3,6 +3,7 @@ body {
   padding-left: 10px;
   padding-right: 10px;
   min-width: 0px;
+  background-color: aliceblue;
 }
 li.libutton {
   border: 2px solid white;
