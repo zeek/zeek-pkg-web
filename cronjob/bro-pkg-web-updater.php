@@ -107,7 +107,7 @@ foreach ($pkgarray as $pkg) {
     $pkgs[$pkg]['stargazers_count'] = 0;
     $pkgs[$pkg]['open_issues_count'] = 0;
     $pkgs[$pkg]['forks_count'] = 0;
-    $pkgs[$pkg]['pushed_at'] = '';
+    $pkgs[$pkg]['pushed_at'] = date("Y-m-d H:i:s", strtotime('now'));
     $ch = curl_init();
     if ($ch !== false) {
         curl_setopt($ch, CURLOPT_URL, $apiurl);
@@ -394,7 +394,7 @@ foreach ($pkgs as $pkgname => $pkginfo) {
                     'description' => $verinfo['description'],
                     'script_dir' => $verinfo['script_dir'],
                     'plugin_dir' => $verinfo['plugin_dir'],
-                    'build_command' => verinfo['$build_command'],
+                    'build_command' => $verinfo['$build_command'],
                     'user_vars' => $verinfo['user_vars'],
                     'test_command' => $verinfo['test_command'],
                     'config_files' => $verinfo['config_files'],
