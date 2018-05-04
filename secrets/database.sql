@@ -43,7 +43,7 @@ CREATE TABLE metadatas (
     suggests TEXT,
     created DATETIME,
     modified DATETIME,
-    FOREIGN KEY package_key (package_id) REFERENCES packages(id) ON DELETE CASCADE;
+    FOREIGN KEY package_key (package_id) REFERENCES packages(id) ON DELETE CASCADE
 );
 
 CREATE TABLE tags (
