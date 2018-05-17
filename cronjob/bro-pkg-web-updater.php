@@ -42,7 +42,6 @@ foreach ($pkgarray as $pkg) {
     // Remove trailing 'local package' information
     $pkg = preg_replace('/\s.*$/', '', $pkg);
 
-
     // Get package info for the current package
     $pkginfo = shell_exec("$broexec info $pkg --json --nolocal --allvers");
     $pkgjson = json_decode($pkginfo, false);
@@ -60,7 +59,8 @@ foreach ($pkgarray as $pkg) {
 
     // Get the package URL
     if (property_exists($pkgjson->$pkg, 'url')) {
-        $pkgurl = $pkgjson->$pkg->url;
+        // Remove trailing '.git'
+        $pkgurl = preg_replace('/\.git$/', '', $pkgjson->$pkg->url);
         $pkgs[$pkg]['url'] = $pkgurl;
     } else {
         echo "\nError. No URL IN JSON for '$pkg'. Skipping.\n";
@@ -246,7 +246,7 @@ if ($running) {
 } else {
     // Write 'running' for updater status
     $stmt = $pdo->prepare("UPDATE updater SET status='running', " .
-        "started=now(), package=NULL WHERE id=1;");
+        "package=NULL, started=now() WHERE id=1;");
     $stmt->execute();
 }
 
@@ -256,17 +256,21 @@ if ($running) {
 $pkgidx = 0;
 $pkgcount = count($pkgs);
 foreach ($pkgs as $pkgname => $pkginfo) {
+    // Keep track of count of current package
     $pkgidx += 1;
 
-    // Write the currently processed package to the database
-    $stmt = $pdo->prepare("UPDATE updater SET package=:pkgname WHERE id=1;");
-    $stmt->execute(['pkgname' => "$pkgname ($pkgidx of $pkgcount)"]);
+    // Remove trailing '.git' from $pkgname
+    $pkgname = preg_replace('/\.git/', '', $pkgname);
 
     // Remove the currently processed package from the list of
     // database packages. What is left at the end is extra to be deleted.
     if (($idx = array_search($pkgname, $datapkgs)) !== false) {
         unset($datapkgs[$idx]);
     }
+
+    // Write the currently processed package to the database
+    $stmt = $pdo->prepare("UPDATE updater SET package=:pkgname WHERE id=1;");
+    $stmt->execute(['pkgname' => "$pkgname ($pkgidx of $pkgcount)"]);
 
     // Extract pacakge author and short_name from pkgname
     $parts = explode("/", $pkgname);
