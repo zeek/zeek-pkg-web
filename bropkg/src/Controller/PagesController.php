@@ -57,6 +57,30 @@ class PagesController extends AppController
         }
         $this->set(compact('page', 'subpage'));
 
+        /* Show Top 5 Watched and Last 5 Updated on home page */
+        $this->loadModel('Packages');
+        $packagecount = $this->Packages->find('all')->all()->count();
+        $this->set('packagecount', $packagecount);
+        $query = $this->Packages
+            ->find('all')
+            ->select(['id', 'name', 'short_name', 'subscribers_count' ])
+            ->order(['Packages.subscribers_count' => 'desc'])
+            ->limit(5);
+        $this->set('topwatched', $query->all());
+        $query = $this->Packages
+            ->find('all')
+            ->select(['id', 'name', 'short_name', 'stargazers_count' ])
+            ->order(['Packages.stargazers_count' => 'desc'])
+            ->limit(5);
+        $this->set('topstarred', $query->all());
+        $query = $this->Packages
+            ->find('all')
+            ->select(['id', 'name', 'short_name', 'pushed_at' ])
+            ->order(['Packages.pushed_at' => 'desc'])
+            ->limit(5);
+        $this->set('lastupdated', $query->all());
+
+
         try {
             $this->render(implode('/', $path));
         } catch (MissingTemplateException $exception) {
@@ -65,5 +89,6 @@ class PagesController extends AppController
             }
             throw new NotFoundException();
         }
+
     }
 }

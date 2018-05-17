@@ -66,11 +66,74 @@ $this->assign('title', 'Home');
   <div class="row form-group">
     <div class="col-sm-offset-5">
       <h3>
-        <?= $this->Html->link('View Package List', 
+        <?= $this->Html->link('View List of ' . $packagecount . ' Packages', 
           ['controller' => 'packages']) ?>
       </h3>
     </div>
   </div>
+
+  <hr/>
+
+  <div class="row form-group">
+    <div class="col-sm-3 col-sm-offset-2">
+      <h4 class="text-center">Top Watched</h4>
+      <?php
+        if (!empty($topwatched)) {
+          echo '<ul>';
+          foreach ($topwatched as $top) {
+            echo '<li>', $top->subscribers_count, ' ', 
+              '<svg viewBox="0 0 16 16" version="1.1"
+              width="16" height="16" aria-hidden="true"><path
+              fill-rule="evenodd" d="M8.06 2C3 2 0 8 0 8s3 6 8.06 6C13 14 16
+              8 16 8s-3-6-7.94-6zM8 12c-2.2 0-4-1.78-4-4 0-2.2 1.8-4 4-4
+              2.22 0 4 1.8 4 4 0 2.22-1.78 4-4 4zm2-4c0 1.11-.89 2-2 2-1.11
+              0-2-.89-2-2 0-1.11.89-2 2-2 1.11 0 2 .89 2 2z"/></svg> ',
+              $this->Html->link($top->short_name, 
+                ['controller' => 'Packages', 'action' => 'view', $top->id]),
+              '</li>';
+          }
+          echo '</ul>';
+        }
+      ?>
+    </div>
+
+    <div class="col-sm-3">
+      <h4 class="text-center">Top Starred</h4>
+      <?php 
+        if (!empty($topstarred)) {
+          echo '<ul>';
+          foreach ($topstarred as $top) {
+            echo '<li>', $top->stargazers_count, ' ', 
+              '<svg viewBox="0 0 14 16" version="1.1"
+              width="14" height="16" aria-hidden="true"><path
+              fill-rule="evenodd" d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6
+              3.26L2.67 14 7 11.67 11.33 14l-.93-4.74z"/></svg> ',
+                $this->Html->link($top->short_name, 
+                    ['controller' => 'Packages', 'action' => 'view', $top->id]),
+                '</li>';
+          }
+          echo '<ul>';
+        }
+      ?>
+    </div>
+
+    <div class="col-sm-3">
+      <h4 class="text-center">Recent Updates</h4>
+      <?php
+        if (!empty($lastupdated)) {
+          echo '<ul>';
+          foreach ($lastupdated as $top) {
+            echo '<li>', $top->pushed_at, ' ', 
+                $this->Html->link($top->short_name, 
+                    ['controller' => 'Packages', 'action' => 'view', $top->id]),
+                '</li>';
+          }
+          echo '</ul>';
+        }
+      ?>
+    </div>
+  </div>
+
 
   <hr/>
 
