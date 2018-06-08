@@ -108,6 +108,10 @@ class MetadatasTable extends Table
             ->scalar('suggests')
             ->allowEmpty('suggests');
 
+        $validator
+            ->scalar('package_ci')
+            ->allowEmpty('package_ci');
+
         return $validator;
     }
 

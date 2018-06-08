@@ -92,6 +92,7 @@ class PackagesTable extends Table
                     'Metadatas.config_files', 'Metadatas.depends',
                     'Metadatas.external_depends', 
                     'Metadatas.suggests',
+                    'Metadatas.package_ci',
                     'Tags.name'
                 ]
 
