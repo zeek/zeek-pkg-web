@@ -41,6 +41,7 @@ CREATE TABLE metadatas (
     depends TEXT,
     external_depends TEXT,
     suggests TEXT,
+    package_ci TEXT,
     created DATETIME,
     modified DATETIME,
     FOREIGN KEY package_key (package_id) REFERENCES packages(id) ON DELETE CASCADE

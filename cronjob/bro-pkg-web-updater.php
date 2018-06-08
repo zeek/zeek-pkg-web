@@ -17,7 +17,7 @@ if (($envlines = file($envfile)) === false) {
 }
 $githubtoken = searchEnvFile('GITHUBTOKEN', $envlines);
 $sqldb       = searchEnvFile('DB_DATABASE', $envlines);
-$sqlhost     = searchEnvFile('DB_HOST', $envlines);
+$sqlhost     = searchEnvFile('DB_HOST',     $envlines);
 $sqluser     = searchEnvFile('DB_USERNAME', $envlines);
 $sqlpass     = searchEnvFile('DB_PASSWORD', $envlines);
 
@@ -147,6 +147,19 @@ foreach ($pkgarray as $pkg) {
     // Get all versions of metadatas for the package
     if (property_exists($pkgjson->$pkg, 'metadata')) {
         $versions = array_keys(get_object_vars($pkgjson->$pkg->metadata));
+
+        // Clone the code from github to run bro-package-check
+        // on each metadata branch version
+        $parts = explode("/", $pkgs[$pkg]['url']);
+        $pkgshort = end($parts);
+        $tempdir = mkTempDir();
+        $pkgdir = $tempdir . '/' . $pkgshort;
+        $chdirok = chdir($tempdir);
+        $output = '';
+        if ($chdirok) {
+            @exec('git clone ' . $pkgs[$pkg]['url'] . '.git 2>&1', $output);
+        }
+
         foreach ($versions as $version) {
             if (property_exists($pkgjson->$pkg->metadata, $version)) {
                 $pkgs[$pkg]['metadata'][$version]['description'] =
@@ -193,7 +206,14 @@ foreach ($pkgarray as $pkg) {
                     (property_exists($pkgjson->$pkg->metadata->$version, 'tags')
                       ? $pkgjson->$pkg->metadata->$version->tags
                       : null);
+                $pkgs[$pkg]['metadata'][$version]['package_ci'] =
+                    runBroPackageCI($pkgdir, $version);
             }
+        }
+
+        if ($chdirok) {
+            chdir(sys_get_temp_dir());
+            deleteDir($tempdir);
         }
     }
 }
@@ -214,13 +234,25 @@ try {
     exit('Error. Database Connection Failed: ' . $e->getMessage() . "\n");
 }
 
-// Get the list of packages in the database to see if
-// we need to delete ones not in the bro-pkg listing.
-$datapkgs = array();
+// Get the list of packages, metadatas, and tags in the database to see if
+// if we need to delete ones not in the bro-pkg listing.
+$packages_names = array();
 $stmt = $pdo->prepare('SELECT name FROM packages');
 $stmt->execute();
 if ($stmt->rowCount() > 0) {
-    $datapkgs = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    $packages_names = $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
+$metadatas_ids = array();
+$stmt = $pdo->prepare('SELECT id FROM metadatas');
+$stmt->execute();
+if ($stmt->rowCount() > 0) {
+    $metadatas_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
+$tags_ids = array();
+$stmt = $pdo->prepare('SELECT id FROM tags');
+$stmt->execute();
+if ($stmt->rowCount() > 0) {
+    $tags_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
 }
 
 // Check if updater is already running
@@ -264,8 +296,8 @@ foreach ($pkgs as $pkgname => $pkginfo) {
 
     // Remove the currently processed package from the list of
     // database packages. What is left at the end is extra to be deleted.
-    if (($idx = array_search($pkgname, $datapkgs)) !== false) {
-        unset($datapkgs[$idx]);
+    if (($idx = array_search($pkgname, $packages_names)) !== false) {
+        unset($packages_names[$idx]);
     }
 
     // Write the currently processed package to the database
@@ -367,6 +399,7 @@ foreach ($pkgs as $pkgname => $pkginfo) {
                     "depends=:depends, " .
                     "external_depends=:external_depends, " .
                     "suggests=:suggests, " .
+                    "package_ci=:package_ci, " .
                     "modified=now() " .
                     "WHERE id=:metaid;"
                 );
@@ -381,6 +414,7 @@ foreach ($pkgs as $pkgname => $pkginfo) {
                     'depends' => $verinfo['depends'],
                     'external_depends' => $verinfo['external_depends'],
                     'suggests' => $verinfo['suggests'],
+                    'package_ci' => $verinfo['package_ci'],
                     'metaid' => $metaid
                 ]);
             } else { // Package doesn't exist in the database. Insert it and get ID.
@@ -390,7 +424,8 @@ foreach ($pkgs as $pkgname => $pkginfo) {
                     "VALUES(uuid(), :pkgid, :version, " .
                     ":description, :script_dir, :plugin_dir, :build_command, " .
                     ":user_vars, :test_command, :config_files, " .
-                    ":depends, :external_depends, :suggests, now(), now());"
+                    ":depends, :external_depends, :suggests, :package_ci, " .
+                    "now(), now());"
                 );
                 $stmt->execute([
                     'pkgid' => $pkgid,
@@ -404,7 +439,8 @@ foreach ($pkgs as $pkgname => $pkginfo) {
                     'config_files' => $verinfo['config_files'],
                     'depends' => $verinfo['depends'],
                     'external_depends' => $verinfo['external_depends'],
-                    'suggests' => $verinfo['suggests']
+                    'suggests' => $verinfo['suggests'],
+                    'package_ci' => $verinfo['package_ci']
                 ]);
                 $stmt = $pdo->prepare("SELECT id FROM metadatas " .
                     "WHERE package_id=:pkgid AND version=:version;");
@@ -418,6 +454,12 @@ foreach ($pkgs as $pkgname => $pkginfo) {
             }
             if (empty($metaid)) {
                 exit("Error. Could not get ID for version '$version'.\n");
+            }
+
+            // Remove the currently processed metadata from the list of
+            // database metadatas. What is left at the end is extra to be deleted.
+            if (($idx = array_search($metaid, $metadatas_ids)) !== false) {
+                unset($metadatas_ids[$idx]);
             }
 
             // Process any tags for the metadata version
@@ -456,20 +498,40 @@ foreach ($pkgs as $pkgname => $pkginfo) {
                     $stmt = $pdo->prepare("INSERT IGNORE INTO metadatas_tags " .
                         "VALUES(:metaid, :tagid);");
                     $stmt->execute(['metaid' => $metaid, 'tagid' => $tagid]);
+
+                    // Remove the currently processed tag from the list of
+                    // database tags. What is left at the end is extra to be deleted.
+                    if (($idx = array_search($tagid, $tags_ids)) !== false) {
+                        unset($tags_ids[$idx]);
+                    }
                 }
             }
         }
     }
 }
 
-// If there are any remaining packages in the original $datapkgs array,
-// then these were not found in the current bro-pkg listing and
-// should be deleted from the database.
-if (count($datapkgs) > 0) {
-    foreach ($datapkgs as $pkgname) {
+// If there are any remaining items in the $packages_names, $metadatas_ids,
+// or $tags_ids arrays, then these were not found in the current bro-pkg 
+// output and should be deleted from the database.
+if (count($packages_names) > 0) {
+    foreach ($packages_names as $pkgname) {
         echo "Deleting $pkgname from database.\n";
         $stmt = $pdo->prepare('DELETE FROM packages WHERE name=:pkgname');
         $stmt->execute(['pkgname' => $pkgname]);
+    }
+}
+if (count($metadatas_ids) > 0) {
+    foreach ($metadatas_ids as $metaid) {
+        echo "Deleting metadata $metaid from database.\n";
+        $stmt = $pdo->prepare('DELETE FROM metadatas WHERE id=:metaid');
+        $stmt->execute(['metaid' => $metaid]);
+    }
+}
+if (count($tags_ids) > 0) {
+    foreach ($tags_ids as $tagid) {
+        echo "Deleting tag $tagid from database.\n";
+        $stmt = $pdo->prepare('DELETE FROM tags WHERE id=:tagid');
+        $stmt->execute(['tagid' => $tagid]);
     }
 }
 
@@ -477,6 +539,15 @@ if (count($datapkgs) > 0) {
 $stmt = $pdo->prepare("UPDATE updater SET status='idle', ended=now(), package=NULL WHERE id=1;");
 $stmt->execute();
 
+/**
+ * objToStr
+ *
+ * This function attempts to turn an object into a string. If the input
+ * is a string, then just return it unchanged.
+ * 
+ * @param object/string $obj
+ * @return string The object transformed into a string.
+ */
 function objToStr($obj)
 {
     $retval = null;
@@ -495,6 +566,17 @@ function objToStr($obj)
     return $retval;
 }
 
+/**
+ * searchEnvFile
+ *
+ * This function searches for an environment variable $envvalue within a
+ * bunch of lines $envlines read from a CakePHP .env file. If found, this
+ * function returns the parameter. Otherwise, it exits with error.
+ *
+ * @param string $envvalue The environment variable name to search for.
+ * @param string $envlines The CakePHP .env file concatenated into one big string.
+ * @return string The value of the environment variable searched for.
+ */
 function searchEnvFile($envvalue, $envlines)
 {
     $retval = '';
@@ -506,6 +588,87 @@ function searchEnvFile($envvalue, $envlines)
         exit("Error. Unable to read $envvalue from .env file.\n");
     }
 
+    return $retval;
+}
+
+/**
+ * mkTempDir
+ *
+ * This function creates a temporary subdirectory within the
+ * the system's temp directory. The new directory name is composed of
+ * 16 hexadecimal letters, plus any prefix if you specify one. The newly
+ * created directory has permissions '0700'. The full path of the the
+ * newly created directory is returned. 
+ *
+ * @return string Full path to the newly created temporary directory.
+ */
+function mkTempDir()
+{
+    $path = '';
+    do {
+        $path = sys_get_temp_dir() . '/' . 
+            sprintf("%08X%08X", mt_rand(), mt_rand());
+    } while (!mkdir($path, 0700, true));
+    return $path;
+}
+
+/**
+ * deleteDir
+ *
+ * This function deletes a directory and all of its contents.
+ *
+ * @param string $dir The (possibly non-empty) directory to delete.
+ * @param bool $shred (Optional) Shred the file before deleting?
+ *        Defaults to false.
+ */
+function deleteDir($dir, $shred = false)
+{
+    if (is_dir($dir)) {
+        $objects = scandir($dir);
+        foreach ($objects as $object) {
+            if ($object != "." && $object != "..") {
+                if (filetype($dir."/".$object) == "dir") {
+                    deleteDir($dir."/".$object);
+                } else {
+                    if ($shred) {
+                        @exec('/bin/env /usr/bin/shred -u -z '.$dir."/".$object);
+                    } else {
+                        @unlink($dir."/".$object);
+                    }
+                }
+            }
+        }
+        reset($objects);
+        @rmdir($dir);
+    }
+}
+
+/**
+ * runBroPackageCI
+ *
+ * This function runs the bro-package-check program 
+ * (https://github.com/ncsa/bro-package-ci) on a given package
+ * directory for a specific version branch.
+ *
+ * @param string $pkgdir The directory containing the git clone'd
+ *        bro package code.
+ * @param string $version The version branch to git checkout.
+ * @return string The result of bro-package-check in JSON format.
+ */
+function runBroPackageCI($pkgdir, $version)
+{
+    $retval = '';
+    if (chdir($pkgdir)) {
+        $output = '';
+        @exec("git checkout $version 2>/dev/null", $output, $return_var);
+        if ($return_var == 0) {
+            $output = '';
+            @exec("bro-package-check --json $pkgdir 2>/dev/null", $output, $return_var);
+            if ($return_var == 0) {
+                $retval = implode($output);
+            }
+        }
+    }
     return $retval;
 }
 

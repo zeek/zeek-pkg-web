@@ -90,9 +90,7 @@ function strClean($str) {
         </div>
     <?php endif; ?>
 
-
     <?php if (!empty($package->metadatas)): ?>
-
         <?php 
             // Find the latest metadata version for the package
             $selected = '';
@@ -277,6 +275,47 @@ function strClean($str) {
                                     echo ', ';
                                 }
                             }
+                        ?>
+                    </div>
+                    <?php endif; ?>
+                    <?php if (strNotNull($metadata->package_ci)): ?>
+                    <div class="row form-group">
+                        <?php
+                        $json = json_decode($metadata->package_ci, true);
+                        echo '<h4>';
+                        echo __('Package Checks : ');
+                        if (array_key_exists('ok', $json)) {
+                            echo '<span style="color:' . ($json['ok'] ? 'green">&#9745;' : 'red">&#8999;') . '</span>';
+                        }
+                        echo '</h4>';
+                        if (array_key_exists('checks', $json)) {
+                            foreach ($json['checks'] as $check) {
+                                if (array_key_exists('name', $check)) {
+                                    echo '<div';
+                                    if (array_key_exists('description', $check)) {
+                                        echo ' title="' . $check['description'] . '"';
+                                    }
+                                    echo '>' . ucwords(preg_replace('/_/', ' ', $check['name'])) . ': ';
+                                    if (array_key_exists('ok', $check)) {
+                                        echo '<span style="color:' . ($check['ok'] ? 'green">&#9745;' : 'red">&#8999;') . '</span>';
+                                    }
+                                    echo '</div>';
+                                }
+                                foreach (['info', 'warnings', 'errors'] as $val) {
+                                    if (array_key_exists($val, $check)) {
+                                        if (count($check[$val]) > 0) {
+                                            echo '<div style="padding-left:2em">';
+                                            echo ucwords($val) . ':';
+                                            echo '<div style="padding-left:2em">';
+                                            echo implode('<br/>', $check[$val]);
+                                            echo '</div>';
+                                            echo '</div>';
+                                        }
+                                    }
+                                }
+                                
+                            }
+                        }
                         ?>
                     </div>
                     <?php endif; ?>

@@ -91,6 +91,8 @@ about the output of the bro-pkg-web-updater script.
 ```
 sudo su
 pip install bro-pkg
+yum install python34-pip
+python3 -m pip install https://github.com/ncsa/bro-package-ci/archive/master.zip
 cp cronjob/bro-pkg-web-updater.php /usr/local/sbin/
 chmod 700 /usr/local/sbin/bro-pkg-web-updater.php
 echo 'MAILTO=USERNAME@HOSTNAME.ORG
