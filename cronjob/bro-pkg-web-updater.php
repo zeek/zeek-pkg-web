@@ -207,7 +207,7 @@ foreach ($pkgarray as $pkg) {
                       ? $pkgjson->$pkg->metadata->$version->tags
                       : null);
                 $pkgs[$pkg]['metadata'][$version]['package_ci'] =
-                    runBroPackageCI($pkgdir, $version);
+                    runBroPackageCI($pkgdir, $pkgshort, $version);
             }
         }
 
@@ -652,10 +652,11 @@ function deleteDir($dir, $shred = false)
  *
  * @param string $pkgdir The directory containing the git clone'd
  *        bro package code.
+ * @param string $pkgshort The "short" name of the package, e.g. bro-doctor.
  * @param string $version The version branch to git checkout.
  * @return string The result of bro-package-check in JSON format.
  */
-function runBroPackageCI($pkgdir, $version)
+function runBroPackageCI($pkgdir, $pkgshort, $version)
 {
     $retval = '';
     if (chdir($pkgdir)) {
@@ -663,7 +664,8 @@ function runBroPackageCI($pkgdir, $version)
         @exec("git checkout $version 2>/dev/null", $output, $return_var);
         if ($return_var == 0) {
             $output = '';
-            @exec("bro-package-check --json $pkgdir 2>/dev/null", $output, $return_var);
+            chdir('..');
+            @exec("bro-package-check --json $pkgshort 2>/dev/null", $output, $return_var);
             if ($return_var == 0) {
                 $retval = implode($output);
             }
