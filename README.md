@@ -4,7 +4,7 @@
 
 ```
 cd ~
-git clone git@github.com:ncsa/bropkgweb.git
+git clone git@github.com:bro/bro-pkg-web.git
 cd bropkgweb
 ```
 
