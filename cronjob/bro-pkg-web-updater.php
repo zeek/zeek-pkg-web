@@ -647,7 +647,7 @@ function deleteDir($dir, $shred = false)
  * runBroPackageCI
  *
  * This function runs the bro-package-check program 
- * (https://github.com/ncsa/bro-package-ci) on a given package
+ * (https://github.com/bro/bro-package-ci) on a given package
  * directory for a specific version branch.
  *
  * @param string $pkgdir The directory containing the git clone'd

@@ -32,10 +32,10 @@ $this->assign('title', 'Home');
               ['target' => '_blank']) ?> users to install third party
           scripts and plugins. The Bro Package Manager is a command line
           script which requires Bro to be installed locally. This site
-          allows users to browse the colletion of third party scripts and
+          allows users to browse the collection of third party scripts and
           plugins available from the <?= $this->Html->link(__('Bro Package
           Github Repository'), 'https://github.com/bro/packages',
-          ['target' => '_blank']) ?>. Use the links in the Navigation panel
+          ['target' => '_blank']) ?>. Use the links in the navigation panel
           to browse by package names or tags. (Note that the list of packages
           is updated once a day.)
         </div>
