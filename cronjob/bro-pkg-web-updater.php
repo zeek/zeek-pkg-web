@@ -2,14 +2,14 @@
 <?php
 
 // This script should be added to root's nightly cron to read the
-// current list of Bro packages using the bro-pkg command line utility.
+// current list of Zeek packages using the zkg command line utility.
 
 // REQUIRED: Set the location of the bro-pkg-web .env file
 // NOTE: This script should be run by user with read access to the .env file.
 $envfile = '/var/www/bropkg/config/.env';
 
-// Set the location of the bro-pkg command line exec
-$broexec = '/usr/bin/bro-pkg';
+// Set the location of the zkg command line exec
+$broexec = '/usr/bin/zkg';
 
 // Read .env file and scan for important secrets
 if (($envlines = file($envfile)) === false) {
@@ -21,7 +21,7 @@ $sqlhost     = searchEnvFile('DB_HOST',     $envlines);
 $sqluser     = searchEnvFile('DB_USERNAME', $envlines);
 $sqlpass     = searchEnvFile('DB_PASSWORD', $envlines);
 
-// Read all info from bro-pkg into local variable $pkgs to
+// Read all info from zkg into local variable $pkgs to
 // make database updating as fast as possible.
 $pkgs = array();
 
@@ -235,7 +235,7 @@ try {
 }
 
 // Get the list of packages, metadatas, and tags in the database to see if
-// if we need to delete ones not in the bro-pkg listing.
+// if we need to delete ones not in the zkg listing.
 $packages_names = array();
 $stmt = $pdo->prepare('SELECT name FROM packages');
 $stmt->execute();
@@ -511,7 +511,7 @@ foreach ($pkgs as $pkgname => $pkginfo) {
 }
 
 // If there are any remaining items in the $packages_names, $metadatas_ids,
-// or $tags_ids arrays, then these were not found in the current bro-pkg 
+// or $tags_ids arrays, then these were not found in the current zkg 
 // output and should be deleted from the database.
 if (count($packages_names) > 0) {
     foreach ($packages_names as $pkgname) {
