@@ -1,5 +1,5 @@
 <?php
-$pageDescription = 'Bro Package Manager';
+$pageDescription = 'Zeek Package Manager';
 
 // Save the current page to session so we can redirect if needed
 $lastpage = $this->request->getRequestTarget();
@@ -34,7 +34,7 @@ $this->request->session()->write('lastpage', $lastpage);
     <?= $this->Html->script(['https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js']) ?>
 </head>
 <body>
-    <?= $this->Navbar->create('<img src="/img/bropkgmgr.png" alt="Bro Package Manager" width="40" style="margin-top:-10px;" title="Home" />',
+    <?= $this->Navbar->create('<img src="/img/bropkgmgr.png" alt="Zeek Package Manager" width="40" style="margin-top:-10px;" title="Home" />',
         ['fixed' => 'top', 'fluid' => true]) ?>
     <?= $this->Navbar->beginMenu() ?>
     <?= $this->Navbar->link('Packages', ['controller' => 'packages'],

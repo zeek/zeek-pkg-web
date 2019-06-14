@@ -8,14 +8,14 @@ $this->assign('title', 'Home');
 
   <div class="row form-group">
     <div class="col">
-      <h1><?= __('Bro Package Browser') ?></h1>
+      <h1><?= __('Zeek Package Browser') ?></h1>
     </div>
   </div>
 
   <div class="row form-group">
     <div class="col-sm-4 col-md-3">
       <?= $this->Html->link($this->Html->image('/img/bropkgmgr.png', 
-          ['alt' => 'Bro Package Manager', 'class' => 'center',
+          ['alt' => 'Zeek Package Manager', 'class' => 'center',
            'width' => '200' ]),
            ['controller' => 'packages'],
            ['escapeTitle' => false,
@@ -24,17 +24,17 @@ $this->assign('title', 'Home');
     <div class="col-sm-8 col-md-9">
       <div class="row form-group">
         <div class="col">
-          The <?= $this->Html->link(__('Bro Package Manager'),
-              'http://bro-package-manager.readthedocs.io',
+          The <?= $this->Html->link(__('Zeek Package Manager'),
+              'https://docs.zeek.org/projects/package-manager',
               ['target' => '_blank']) ?> 
-          enables <?= $this->Html->link(__('Bro'), 
-              'https://bro.org/',
+          enables <?= $this->Html->link(__('Zeek'), 
+              'https://zeek.org/',
               ['target' => '_blank']) ?> users to install third party
-          scripts and plugins. The Bro Package Manager is a command line
-          script which requires Bro to be installed locally. This site
+          scripts and plugins. The Zeek Package Manager is a command line
+          script which requires Zeek to be installed locally. This site
           allows users to browse the collection of third party scripts and
-          plugins available from the <?= $this->Html->link(__('Bro Package
-          Github Repository'), 'https://github.com/bro/packages',
+          plugins available from the <?= $this->Html->link(__('Zeek Package
+          Github Repository'), 'https://github.com/zeek/packages',
           ['target' => '_blank']) ?>. Use the links in the navigation panel
           to browse by package names or tags. (Note that the list of packages
           is updated once a day.)
@@ -44,10 +44,10 @@ $this->assign('title', 'Home');
         <div class="col">
           Once you have found a package you want to install, use the 
           <?= $this->Html->link(__('Quickstart Guide'), 
-          'http://bro-package-manager.readthedocs.io/en/stable/quickstart.html',
-          ['target' => '_blank']) ?> to install the <kbd>bro-pkg</kbd> command line
+          'https://docs.zeek.org/projects/package-manager/en/stable/quickstart.html',
+          ['target' => '_blank']) ?> to install the <kbd>zkg</kbd> command line
           utility. Then use the <?= $this->Html->link(__('install'),
-          'http://bro-package-manager.readthedocs.io/en/stable/bro-pkg.html#install',
+          'https://docs.zeek.org/projects/package-manager/en/stable/zkg.html#install',
           ['target' => '_blank']) ?> command to install your selected package. For
           example:
         </div>
@@ -57,7 +57,7 @@ $this->assign('title', 'Home');
 
   <div class="row form-group">
     <div class="col">
-      <pre>bro-pkg install bro/ncsa/bro-doctor</pre>
+      <pre>zkg install bro/ncsa/bro-doctor</pre>
     </div>
   </div>
 
