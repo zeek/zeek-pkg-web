@@ -4,8 +4,8 @@
 
 ```
 cd ~
-git clone git@github.com:bro/bro-pkg-web.git
-cd bro-pkg-web
+git clone git@github.com:zeek/zeek-pkg-web.git
+cd zeek-pkg-web
 ```
 
 ## Copy files/directories
@@ -84,15 +84,15 @@ something suitable for the installation.
 mysql -u root -p < secrets/database.sql
 ```
 
-## Set up cronjob to read bro pkg info
+## Set up cronjob to read Zeek pkg info
 Note: Change USERNAME@HOSTNAME.ORG to the email that should receive emails
 about the output of the bro-pkg-web-updater script.
 
 ```
 sudo su
-pip install bro-pkg
+pip install zkg
 yum install python34-pip
-python3 -m pip install https://github.com/bro/bro-package-ci/archive/master.zip
+python3 -m pip install https://github.com/zeek/zeek-package-ci/archive/master.zip
 cp cronjob/bro-pkg-web-updater.php /usr/local/sbin/
 chmod 700 /usr/local/sbin/bro-pkg-web-updater.php
 echo 'MAILTO=USERNAME@HOSTNAME.ORG
