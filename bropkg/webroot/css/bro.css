@@ -28,6 +28,9 @@ select.div-toggle {
   font-size: 14px;
   min-width: 0px;
 }
+.markdown-body img {
+  max-width: 100%;
+}
 .packagebox {
     border: 1px solid #ddd;
     border-radius: 3px;
