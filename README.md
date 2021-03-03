@@ -86,16 +86,19 @@ mysql -u root -p < secrets/database.sql
 
 ## Set up cronjob to read Zeek pkg info
 Note: Change USERNAME@HOSTNAME.ORG to the email that should receive emails
-about the output of the bro-pkg-web-updater script.
+about the output of the bro-pkg-web-updater script.  Use of new Python 3
+versions is also possible, this example just happens to use 3.4.
 
 ```
 sudo su
-pip install zkg
 yum install python34-pip
+pip-3.4 install zkg
 python3 -m pip install https://github.com/zeek/zeek-package-ci/archive/master.zip
 cp cronjob/bro-pkg-web-updater.php /usr/local/sbin/
 chmod 700 /usr/local/sbin/bro-pkg-web-updater.php
 echo 'MAILTO=USERNAME@HOSTNAME.ORG
+# Update to latest zkg
+0 4 * * *    root    pip-3.4 install --upgrade zkg
 # Read the list of Bro packages and update database at 4am daily
 0 4 * * *    root    /usr/local/sbin/bro-pkg-web-updater.php' > \
 /etc/cron.d/bro-pkg-web.cron
