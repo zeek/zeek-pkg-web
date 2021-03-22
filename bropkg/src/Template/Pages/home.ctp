@@ -57,7 +57,7 @@ $this->assign('title', 'Home');
 
   <div class="row form-group">
     <div class="col">
-      <pre>zkg install bro/ncsa/bro-doctor</pre>
+      <pre>zkg install zeek/ncsa/bro-doctor</pre>
     </div>
   </div>
 
