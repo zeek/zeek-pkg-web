@@ -9,11 +9,28 @@
 $envfile = '/var/www/bropkg/config/.env';
 
 // Set the location of the zkg command line exec
-$broexec = '/usr/bin/zkg';
+$zkg_exec = '/usr/local/bin/zkg';
+
+function fatal($msg) {
+    echo "$msg\n";
+    exit(1);
+}
+
+function required_exec($cmd) {
+    $output=null;
+    $retval=null;
+    exec($cmd, $output, $retval);
+    if ($retval != 0) {
+        echo "exec($cmd) failed with status $retval and output:\n";
+        print_r($output);
+        exit(1);
+    }
+    return $output;
+}
 
 // Read .env file and scan for important secrets
 if (($envlines = file($envfile)) === false) {
-    exit("Error. Unable to read $envfile .\n");
+    fatal("Error. Unable to read $envfile .");
 }
 $githubtoken = searchEnvFile('GITHUBTOKEN', $envlines);
 $sqldb       = searchEnvFile('DB_DATABASE', $envlines);
@@ -26,11 +43,10 @@ $sqlpass     = searchEnvFile('DB_PASSWORD', $envlines);
 $pkgs = array();
 
 // Refresh the local bro package listing.
-$refresh = shell_exec("$broexec refresh");
+$refresh = required_exec("$zkg_exec refresh");
 
 // Get a list of all bro packages
-$pkglist = shell_exec("$broexec list all --nodesc");
-$pkgarray = explode("\n", trim($pkglist));
+$pkgarray = required_exec("$zkg_exec list all --nodesc");
 
 $pkgcount = count($pkgarray);
 if ($pkgcount > 0) {
@@ -43,7 +59,17 @@ foreach ($pkgarray as $pkg) {
     $pkg = preg_replace('/\s.*$/', '', $pkg);
 
     // Get package info for the current package
-    $pkginfo = shell_exec("$broexec info $pkg --json --nolocal --allvers");
+    $zkg_output = null;
+    $zkg_res = null;
+    exec("$zkg_exec info $pkg --json --nolocal --allvers", $zkg_output, $zkg_res);
+
+    if ($zkg_res != 0) {
+        echo "\nError.  Failed to get info for '$pkg'. Skipping.  zkg output was:\n";
+        print_r($zkg_output);
+        continue;
+    }
+
+    $pkginfo = implode("\n", $zkg_output);
     $pkgjson = json_decode($pkginfo, false);
 
     // Verify package name from JSON is correct
@@ -231,7 +257,7 @@ $sqlopt  = [
 try {
     $pdo = new PDO($sqldsn, $sqluser, $sqlpass, $sqlopt);
 } catch (PDOException $e) {
-    exit('Error. Database Connection Failed: ' . $e->getMessage() . "\n");
+    fatal('Error. Database Connection Failed: ' . $e->getMessage());
 }
 
 // Get the list of packages, metadatas, and tags in the database to see if
@@ -274,7 +300,7 @@ if ($stmt->rowCount() > 0) {
 }
 
 if ($running) {
-    exit("Error. The updater is already running.\n");
+    fatal("Error. The updater is already running.");
 } else {
     // Write 'running' for updater status
     $stmt = $pdo->prepare("UPDATE updater SET status='running', " .
@@ -373,7 +399,7 @@ foreach ($pkgs as $pkgname => $pkginfo) {
         }
     }
     if (empty($pkgid)) {
-        exit("Error. Could not get ID for '$pkgname'.\n");
+        fatal("Error. Could not get ID for '$pkgname'.");
     }
 
     // Process all versions of metadatas for the package
@@ -453,7 +479,7 @@ foreach ($pkgs as $pkgname => $pkginfo) {
                 }
             }
             if (empty($metaid)) {
-                exit("Error. Could not get ID for version '$version'.\n");
+                fatal("Error. Could not get ID for version '$version'.");
             }
 
             // Remove the currently processed metadata from the list of
@@ -491,7 +517,7 @@ foreach ($pkgs as $pkgname => $pkginfo) {
                         }
                     }
                     if (empty($tagid)) {
-                        exit("Error. Could not get ID for tag '$tag'.\n");
+                        fatal("Error. Could not get ID for tag '$tag'.");
                     }
 
                     // Link the tag to the metadata version
@@ -585,7 +611,7 @@ function searchEnvFile($envvalue, $envlines)
         $retval = $matches[1];
     }
     if (strlen($retval) == 0) {
-        exit("Error. Unable to read $envvalue from .env file.\n");
+        fatal("Error. Unable to read $envvalue from .env file.");
     }
 
     return $retval;
