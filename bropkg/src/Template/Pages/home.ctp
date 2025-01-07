@@ -133,18 +133,3 @@ $this->assign('title', 'Home');
       ?>
     </div>
   </div>
-
-
-  <hr/>
-
-  <div class="row form-group">
-    <div class="col">
-      <h4>More Features Coming Soon</h4>
-      <?php
-      $features = [
-          'Nightly Travis CI build and test of packages',
-      ];
-      echo $this->Html->nestedList($features);
-      ?>
-    </div>
-  </div>
