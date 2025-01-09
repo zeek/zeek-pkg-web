@@ -19,7 +19,6 @@ $this->request->session()->write('lastpage', $lastpage);
 
     <?= $this->Html->css('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css') ?>
     <?= $this->Html->css('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css') ?>
-    <?= $this->Html->css('https://assets-cdn.github.com/assets/github-cec46cb7e4a6c4b4c35e2dac77b2196d.css') ?>
     <?= $this->Html->css('cake') ?>
     <?= $this->Html->css('bro') ?>
 
