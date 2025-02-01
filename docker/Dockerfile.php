@@ -1,29 +1,32 @@
 FROM php:7.1.33-fpm AS base
 WORKDIR /var/www/html
 
-RUN apt update -y
-RUN DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
-    cron \
-    git \
-    libicu-dev \
-    libzip-dev \
-    procps \
-    python3-pip \
-    python3-setuptools \
-    unzip \
-    vim
-RUN apt purge -y --auto-remove
+ENV DEBIAN_FRONTEND=noninteractive
 
-RUN docker-php-ext-install \
+RUN apt-get update -y \
+ && apt-get install --no-install-recommends -y \
+    cron=3.0pl1-134+deb10u1 \
+    git=1:2.20.1-2+deb10u9 \
+    libicu-dev=63.1-6+deb10u3 \
+    libzip-dev=1.5.1-4 \
+    procps=2:3.3.15-2 \
+    python3-pip=18.1-5 \
+    python3-setuptools=40.8.0-1 \
+    unzip=6.0-23+deb10u3 \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/* \
+ # The source packages for these extensions come with the php docker image
+ # so they're fixed per the version of php we're using. There's no reason
+ # (or way) to specify the versions here.
+ && docker-php-ext-install \
     intl \
     mysqli \
     pdo \
     pdo_mysql \
-    zip
-
-# Install an initial version of zkg. This gets updated by cron
-# every night before updating the packages list.
-RUN pip3 install GitPython semantic-version zkg
+    zip \
+ # Install an initial version of zkg. This gets updated by cron
+ # every night before updating the packages list.
+ && pip3 install --no-cache-dir GitPython==3.1.44 semantic-version==2.10.0 zkg==3.0.1
 
 # We could use the composer image directly here but using the php
 # one guarantees we have the same version of php installed. Instead
@@ -31,10 +34,14 @@ RUN pip3 install GitPython semantic-version zkg
 FROM php:7.1.33-fpm AS build
 WORKDIR /var/www/html
 
-RUN apt update -y
-RUN DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
-    libicu-dev \
-    libzip-dev
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update -y \
+ && apt-get install --no-install-recommends -y \
+    libicu-dev=63.1-6+deb10u3 \
+    libzip-dev=1.5.1-4 \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-install \
     intl \
@@ -59,7 +66,7 @@ COPY --chown=www-data:www-data --chmod=640 secrets/.env /var/www/html/config/.en
 # it's stored in /usr/local/bin/bro-package-ci. We explicitly pin to version 0.4.0
 # which is the version the existing live site is using. The version on 'master' has
 # some problems with the dns_resolution check over-matching.
-RUN python3 -m pip install 'bro-package-ci@git+https://github.com/zeek/zeek-package-ci@1117e24fd80f03167ca36749bf5a246a02d86178'
+RUN python3 -m pip install --no-cache-dir 'bro-package-ci@git+https://github.com/zeek/zeek-package-ci@1117e24fd80f03167ca36749bf5a246a02d86178'
 
 COPY --chmod=755 cronjob/bro-pkg-web-updater.php /usr/local/sbin
 COPY --chmod=755 cronjob/bro-pkg-web-cron.sh /etc/cron.daily
