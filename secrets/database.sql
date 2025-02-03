@@ -8,7 +8,7 @@ SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS sessions, users, packages,metadatas, tags, metadatas_tags, updater;
 SET FOREIGN_KEY_CHECKS=1;
 
-source /var/www/bropkg/config/schema/sessions.sql;
+source /bro-sessions.sql
 
 CREATE TABLE packages (
     id CHAR(36) PRIMARY KEY,
