@@ -1,0 +1,18 @@
+# This Docker compose configuration sets up a temporary nginx server for use
+# when creating the initial set of certificates for Let's Encrypt.  This
+# container is created and destroyed by the init-certs.sh script and does not
+# need to be managed manually.
+#
+# Since the certs have to exist before you can enable ssl mode in nginx, we need
+# a separate service set up in unencrypted mode to do the initial verification
+# from LE. Once the certs are created, this service is torn down and not used
+# again.
+services:
+  nginx:
+    image: nginx:1.27.3
+    volumes:
+      - ./nginx-certtool.conf:/etc/nginx/conf.d/default.conf
+      - ../data/certbot/letsencrypt:/etc/letsencrypt:ro
+      - ../data/certbot/www:/var/www/certbot:ro
+    ports:
+      - 80:80

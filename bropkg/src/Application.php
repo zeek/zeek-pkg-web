@@ -49,4 +49,39 @@ class Application extends BaseApplication
 
         return $middlewareQueue;
     }
+
+    public function bootstrap()
+    {
+        parent::bootstrap();
+
+        if (Configure::read('debug')) {
+            $this->addPlugin('DebugKit');
+        }
+
+        /*
+         * https://github.com/tanuck/cakephp-markdown
+         */
+        $this->addPlugin('Tanuck/Markdown');
+
+        /*
+         * https://github.com/FriendsOfCake/search
+         */
+        $this->addPlugin('Search');
+
+        /*
+         * https://github.com/Holt59/cakephp3-bootstrap-helpers
+         */
+        $this->addPlugin('Bootstrap');
+
+        if ( PHP_SAPI === 'cli' )
+        {
+            try {
+                $this->addPlugin('Bake');
+            } catch (MissingPluginException $e) {
+                // Do not halt if the plugin is missing
+            }
+
+            $this->addPlugin('Migrations');
+        }
+    }
 }

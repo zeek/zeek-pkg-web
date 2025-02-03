@@ -44,10 +44,10 @@ class TagsController extends AppController
         // If no tag specified, simply list all tags.
         if (is_null($id)) {
             return $this->redirect([
-                'controller' => 'Tags', 
+                'controller' => 'Tags',
                 'action' => 'index'
             ]);
-        } 
+        }
 
         $tag = $this->Tags->get($id, [
             'contain' => ['Metadatas']

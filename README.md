@@ -8,104 +8,48 @@ git clone git@github.com:zeek/zeek-pkg-web.git
 cd zeek-pkg-web
 ```
 
-## Copy files/directories
-```
-sudo cp -a bropkg /var/www
-### Modify salt, database password, and CILogon client id/key in 
-###     secrets/.env to something suitable for your installation
-cp secrets/.env /var/www/bropkg/config/
-chmod 640 /var/www/bropkg/config/.env
-cd /var/www/bropkg
-composer update
-sudo chgrp -R apache /var/www/bropkg
-```
+## Edit secrets/.env
 
-## Set up HTTPD
-Edit /etc/httpd/conf.d/ssl.conf :
-```
-<VirtualHost _default_:443>
-DocumentRoot "/var/www/bropkg"
+`secrets/.env` has a set of variables for passwords and such that PHP will need
+to connect to the database and update the packages list from GitHub.
 
-...
+## Initialize an SSL certificate
 
-<Directory />
-  Options FollowSymLinks
-  AllowOverride All
-</Directory>
+- Edit `cert_setup/ssl-update.sh` and set the `DOMAINS` and `EMAIL` values to
+  be sane for your installation.
+- Run the `cert_setup/init-certs.sh` script. This will generate a Let's Encrypt
+  certificate, store it in the location that nginx container will use, and add
+  a cron task to automatically update it.
+- Edit `docker/nginx-default.conf` and set the hostname in the `ssl_certificate`
+  and `ssl_certificate_key` values to match the `DOMAINS` setting from earlier.
 
-</VirtualHost>
+## (For development only) Enable the database container
+
+- Edit `secrets/database.sql` and change the `BRO_USER_PASSWORD` value to match
+  what is set in `secrets.env`.
+- Edit `secrets/.env` and change the `DB_HOST` value to `db` to map to the
+  internal hostname for the docker database service.
+- Run the following:
 
 ```
-
-Edit /etc/httpd/conf.d/virthost.conf :
-```
-<VirtualHost *:80>
-DocumentRoot /var/www/bropkg
-
+docker compose -f docker-compose-dev.yml build
+docker compose -f docker-compose-dev.yml up -d
 ```
 
-Restart httpd process:
-```
-sudo service httpd restart
-```
-
-## Initialize database
+## Run `docker-compose`
 
 ```
-mysql_secure_installation    # only needed once
-
-Enter current password for root (enter for none): <none>
-OK, successfully used password, moving on...
-Set root password? [Y/n] y
-New password: 
-Re-enter new password: 
-Password updated successfully!
-Reloading privilege tables..
- ... Success!
-Remove anonymous users? [Y/n] y
- ... Success!
-Disallow root login remotely? [Y/n] y
- ... Success!
-Remove test database and access to it? [Y/n] y
- - Dropping test database...
- ... Success!
- - Removing privileges on test database...
- ... Success!
-Reload privilege tables now? [Y/n] y
- ... Success!
-Cleaning up...
-All done!
+docker compose build
+docker compose up -d
 ```
 
-Load bropkg user and associated tables. Change BRO_USER_PASSWORD to
-something suitable for the installation.
+This will create the images needed for nginx and PHP and start them running. The
+Dockerfiles for these images are stored in the `docker` directory. This will
+also create a Let's Encrypt cert based on the hostname set in the
+
+## (Optional) Run an update of the packages database
 
 ```
-mysql -u root -p < secrets/database.sql
+docker exec -it zeek-pkg-web-php-1 /bin/bash
+/etc/cron.daily/bro-pkg-web-cron.sh
 ```
-
-## Set up cronjob to read Zeek pkg info
-Note: Change USERNAME@HOSTNAME.ORG to the email that should receive emails
-about the output of the bro-pkg-web-updater script.  Use of new Python 3
-versions is also possible, this example just happens to use 3.4.
-
-```
-sudo su
-yum install python34-pip
-pip-3.4 install zkg
-python3 -m pip install https://github.com/zeek/zeek-package-ci/archive/master.zip
-cp cronjob/bro-pkg-web-updater.php /usr/local/sbin/
-chmod 700 /usr/local/sbin/bro-pkg-web-updater.php
-echo 'MAILTO=USERNAME@HOSTNAME.ORG
-# Update to latest zkg
-0 4 * * *    root    pip-3.4 install --upgrade zkg
-# Read the list of Bro packages and update database at 4am daily
-0 4 * * *    root    /usr/local/sbin/bro-pkg-web-updater.php' > \
-/etc/cron.d/bro-pkg-web.cron
-exit
-```
-Run the script at least once!
-```
-sudo php /usr/local/sbin/bro-pkg-web-updater.php
-```
-

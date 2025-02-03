@@ -57,7 +57,7 @@ class PackagesController extends AppController
      */
     public function view($id = null)
     {
-        // If no pakcage specified, simply list all packages.
+        // If no package specified, simply list all packages.
         if (is_null($id)) {
             return $this->redirect([
                 'controller' => 'Packages',
