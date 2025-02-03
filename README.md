@@ -13,6 +13,16 @@ cd zeek-pkg-web
 `secrets/.env` has a set of variables for passwords and such that PHP will need
 to connect to the database and update the packages list from GitHub.
 
+## Initialize an SSL certificate
+
+- Edit `cert_setup/ssl-update.sh` and set the `DOMAINS` and `EMAIL` values to
+  be sane for your installation.
+- Run the `cert_setup/init-certs.sh` script. This will generate a Let's Encrypt
+  certificate, store it in the location that nginx container will use, and add
+  a cron task to automatically update it.
+- Edit `docker/nginx-default.conf` and set the hostname in the `ssl_certificate`
+  and `ssl_certificate_key` values to match the `DOMAINS` setting from earlier.
+
 ## (For development only) Enable the database container
 
 - Edit `docker-compose.yml` and uncomment the section for the `db` service
