@@ -42,8 +42,5 @@ RUN composer dumpautoload --optimize
 
 FROM base AS final
 
-COPY --from=build /var/www/html /var/www/html
-COPY secrets/.env /var/www/html/config/.env
-
-RUN chown -R www-data:www-data /var/www/html
-RUN chmod 640 /var/www/html/config/.env
+COPY --from=build --chown=www-data:www-data /var/www/html /var/www/html
+COPY --chown=www-data:www-data --chmod=640 secrets/.env /var/www/html/config/.env
