@@ -16,7 +16,7 @@ function fatal($msg) {
     exit(1);
 }
 
-function timeout_exec($cmd, &$output, &$retval, $timeout=30) {
+function timeout_exec($cmd, &$output, &$retval, $timeout=120) {
     $timeout_cmd = "timeout $timeout $cmd";
     exec($timeout_cmd, $output, $retval);
 
@@ -25,7 +25,7 @@ function timeout_exec($cmd, &$output, &$retval, $timeout=30) {
     }
 }
 
-function required_exec($cmd, $timeout=30) {
+function required_exec($cmd, $timeout=120) {
     $output=null;
     $retval=null;
     timeout_exec($cmd, $output, $retval, $timeout);
