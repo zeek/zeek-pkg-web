@@ -308,7 +308,7 @@ if ($running) {
     $stmt->execute();
 }
 
-// Scan through the previously populated $pkgs array and 
+// Scan through the previously populated $pkgs array and
 // write the package info to the database.
 
 $pkgidx = 0;
@@ -330,7 +330,7 @@ foreach ($pkgs as $pkgname => $pkginfo) {
     $stmt = $pdo->prepare("UPDATE updater SET package=:pkgname WHERE id=1;");
     $stmt->execute(['pkgname' => "$pkgname ($pkgidx of $pkgcount)"]);
 
-    // Extract pacakge author and short_name from pkgname
+    // Extract package author and short_name from pkgname
     $parts = explode("/", $pkgname);
     $pkgauthor = $parts[1];
     $pkgshort = $parts[2];
@@ -537,7 +537,7 @@ foreach ($pkgs as $pkgname => $pkginfo) {
 }
 
 // If there are any remaining items in the $packages_names, $metadatas_ids,
-// or $tags_ids arrays, then these were not found in the current zkg 
+// or $tags_ids arrays, then these were not found in the current zkg
 // output and should be deleted from the database.
 if (count($packages_names) > 0) {
     foreach ($packages_names as $pkgname) {
@@ -570,7 +570,7 @@ $stmt->execute();
  *
  * This function attempts to turn an object into a string. If the input
  * is a string, then just return it unchanged.
- * 
+ *
  * @param object/string $obj
  * @return string The object transformed into a string.
  */
@@ -624,7 +624,7 @@ function searchEnvFile($envvalue, $envlines)
  * the system's temp directory. The new directory name is composed of
  * 16 hexadecimal letters, plus any prefix if you specify one. The newly
  * created directory has permissions '0700'. The full path of the the
- * newly created directory is returned. 
+ * newly created directory is returned.
  *
  * @return string Full path to the newly created temporary directory.
  */
@@ -632,7 +632,7 @@ function mkTempDir()
 {
     $path = '';
     do {
-        $path = sys_get_temp_dir() . '/' . 
+        $path = sys_get_temp_dir() . '/' .
             sprintf("%08X%08X", mt_rand(), mt_rand());
     } while (!mkdir($path, 0700, true));
     return $path;
@@ -672,7 +672,7 @@ function deleteDir($dir, $shred = false)
 /**
  * runBroPackageCI
  *
- * This function runs the bro-package-check program 
+ * This function runs the bro-package-check program
  * (https://github.com/bro/bro-package-ci) on a given package
  * directory for a specific version branch.
  *

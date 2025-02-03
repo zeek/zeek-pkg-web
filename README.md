@@ -11,7 +11,7 @@ cd zeek-pkg-web
 ## Copy files/directories
 ```
 sudo cp -a bropkg /var/www
-### Modify salt, database password, and CILogon client id/key in 
+### Modify salt, database password, and CILogon client id/key in
 ###     secrets/.env to something suitable for your installation
 cp secrets/.env /var/www/bropkg/config/
 chmod 640 /var/www/bropkg/config/.env
@@ -57,8 +57,8 @@ mysql_secure_installation    # only needed once
 Enter current password for root (enter for none): <none>
 OK, successfully used password, moving on...
 Set root password? [Y/n] y
-New password: 
-Re-enter new password: 
+New password:
+Re-enter new password:
 Password updated successfully!
 Reloading privilege tables..
  ... Success!
@@ -108,4 +108,3 @@ Run the script at least once!
 ```
 sudo php /usr/local/sbin/bro-pkg-web-updater.php
 ```
-
