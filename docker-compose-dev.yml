@@ -1,0 +1,12 @@
+services:
+  # Configuration for a mariadb service that can be used
+  # for testing on dev machines.
+  db:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.mariadb
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: testing
+    volumes:
+      - ./data/mariadb:/var/lib/mysql:Z

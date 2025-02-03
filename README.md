@@ -25,16 +25,21 @@ to connect to the database and update the packages list from GitHub.
 
 ## (For development only) Enable the database container
 
-- Edit `docker-compose.yml` and uncomment the section for the `db` service
 - Edit `secrets/database.sql` and change the `BRO_USER_PASSWORD` value to match
   what is set in `secrets.env`.
 - Edit `secrets/.env` and change the `DB_HOST` value to `db` to map to the
   internal hostname for the docker database service.
+- Run the following:
+
+```
+docker compose -f docker-compose-dev.yml build
+docker compose -f docker-compose-dev.yml up -d
+```
 
 ## Run `docker-compose`
 
 ```
-docker-compose build
+docker compose build
 docker compose up -d
 ```
 
