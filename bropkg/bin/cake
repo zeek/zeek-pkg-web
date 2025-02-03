@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
+# shellcheck disable=all
+
 ################################################################################
 #
 # Cake is a shell script for invoking CakePHP shell commands

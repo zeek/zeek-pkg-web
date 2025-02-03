@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
-cd $SCRIPT_DIR
+cd "${SCRIPT_DIR}" || exit
 
 docker compose up -d nginx
 bash ./ssl-update.sh
 docker compose down nginx
 
 curl \
-    -o ${SCRIPT_DIR}/../data/certbot/mozilla-dhparam.txt \
+    -o "${SCRIPT_DIR}/../data/certbot/mozilla-dhparam.txt" \
     https://ssl-config.mozilla.org/ffdhe2048.txt
 
 if [ -d /etc/cron.d ]; then

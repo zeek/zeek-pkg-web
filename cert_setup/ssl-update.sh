@@ -1,12 +1,12 @@
+#!/usr/bin/env bash
+
 # This script is originally from https://gist.github.com/maxivak/4706c87698d14e9de0918b6ea2a41015
 # with some adaptations for first-run.
 
-#!/bin/bash
-
 # Edit these two values before running this script or init-certs.sh for the
 # first time.
-DOMAINS="domain.com"
-EMAIL="email@domain.com"
+DOMAIN="example.com"
+EMAIL="email@example.com"
 
 # The owner/group of the cert files
 CHOWN="root:root"
@@ -15,15 +15,13 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 REPO_PATH="${SCRIPT_DIR}/.."
 CERT_DIR_PATH="${REPO_PATH}/data/certbot/letsencrypt"
 WEBROOT_PATH="${REPO_PATH}/data/certbot/www"
-CERT_LOG_PATH="${REPO_PATH}/data/certbot/logs"
 LE_RENEW_HOOK="docker restart zeek-pkg-web-nginx-1"
 EXP_LIMIT="30"
-CHECK_FREQ="30"
 STAGING=0
 FIRST_RUN=0
 
-if [[ -z $DOMAINS ]]; then
-    echo "No domains set, please fill -e 'DOMAINS=example.com www.example.com'"
+if [[ -z $DOMAIN ]]; then
+    echo "No domains set, please fill -e 'DOMAIN=example.com'"
     exit 1
 fi
 
@@ -47,21 +45,15 @@ if [[ $STAGING -eq 1 ]]; then
     ADDITIONAL="--staging"
 fi
 
-DARRAYS=(${DOMAINS})
-EMAIL_ADDRESS=${EMAIL}
-LE_DOMAINS=("${DARRAYS[*]/#/-d }")
-
 exp_limit="${EXP_LIMIT:-30}"
-check_freq="${CHECK_FREQ:-30}"
 
 le_hook() {
     if [[ $FIRST_RUN -eq 1 ]]; then
         return
     fi
 
-    command=$(echo $LE_RENEW_HOOK)
-    echo "[INFO] Run: $command"
-    eval $command
+    echo "[INFO] Run: ${LE_RENEW_HOOK}"
+    eval "$LE_RENEW_HOOK"
 }
 
 le_fixpermissions() {
@@ -80,62 +72,44 @@ le_renew() {
         certbot/certbot:v3.1.0 certonly \
         --webroot --agree-tos --renew-by-default --non-interactive \
         --preferred-challenges http-01 \
-        --server https://acme-v02.api.letsencrypt.org/directory --text ${ADDITIONAL} \
-        --email ${EMAIL_ADDRESS} -w /tmp/letsencrypt ${LE_DOMAINS}
+        --server https://acme-v02.api.letsencrypt.org/directory --text "${ADDITIONAL}" \
+        --email "${EMAIL}" -w /tmp/letsencrypt -d "${DOMAIN}"
 
     le_fixpermissions
     le_hook
 }
 
 le_check() {
-    cert_file="$CERT_DIR_PATH/live/$DARRAYS/fullchain.pem"
+    cert_file="$CERT_DIR_PATH/live/${DOMAIN}/fullchain.pem"
 
     echo "START check"
     echo "file: $cert_file"
 
     if [[ -e $cert_file ]]; then
 
-        exp=$(date -d "$(openssl x509 -in $cert_file -text -noout | grep "Not After" | cut -c 25-)" +%s)
+        exp=$(date -d "$(openssl x509 -in "${cert_file}" -text -noout | grep "Not After" | cut -c 25-)" +%s)
         datenow=$(date -d "now" +%s)
-        days_exp=$((($exp - $datenow) / 86400))
+        days_exp=$(((exp - datenow) / 86400))
 
-        echo "Checking expiration date for $DARRAYS..."
+        echo "Checking expiration date for ${DOMAIN}..."
 
         if [ "$days_exp" -gt "$exp_limit" ]; then
             echo "The certificate is up to date, no need for renewal ($days_exp days left)."
         else
-            echo "The certificate for $DARRAYS is about to expire soon. Starting webroot renewal script..."
+            echo "The certificate for ${DOMAIN} is about to expire soon. Starting webroot renewal script..."
             le_renew
-            echo "Renewal process finished for domain $DARRAYS"
+            echo "Renewal process finished for domain ${DOMAIN}"
         fi
-
-        echo "Checking domains for $DARRAYS..."
-
-        domains=($(openssl x509 -in $cert_file -text -noout | grep -oP '(?<=DNS:)[^,]*'))
-        new_domains=($(
-            for domain in ${DARRAYS[@]}; do
-                [[ " ${domains[@]} " =~ " ${domain} " ]] || echo $domain
-            done
-        ))
-
-        if [ -z "$new_domains" ]; then
-            echo "The certificate have no changes, no need for renewal"
-        else
-            echo "The list of domains for $DARRAYS certificate has been changed. Starting webroot renewal script..."
-            le_renew
-            echo "Renewal process finished for domain $DARRAYS"
-        fi
-
     else
         FIRST_RUN=1
 
-        echo "[INFO] certificate file not found for domain $DARRAYS. Starting webroot initial certificate request script..."
+        echo "[INFO] certificate file not found for domain ${DOMAIN}. Starting webroot initial certificate request script..."
         le_renew
-        echo "Certificate request process finished for domain $DARRAYS"
+        echo "Certificate request process finished for domain ${DOMAIN}"
     fi
 
 }
 
 echo "--- start. $(date)"
 
-le_check $1
+le_check
