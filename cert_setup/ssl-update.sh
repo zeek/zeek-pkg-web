@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # This script is originally from https://gist.github.com/maxivak/4706c87698d14e9de0918b6ea2a41015
-# with some adaptations for first-run.
+# with simplifications and adaptations for Zeek's uses.
 
 # Edit these two values before running this script or init-certs.sh for the
 # first time.
@@ -15,9 +15,9 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 REPO_PATH="${SCRIPT_DIR}/.."
 CERT_DIR_PATH="${REPO_PATH}/data/certbot/letsencrypt"
 WEBROOT_PATH="${REPO_PATH}/data/certbot/www"
+CERTBOT_LOGS_PATH="${REPO_PATH}/data/certbot/logs"
 LE_RENEW_HOOK="docker restart zeek-pkg-web-nginx-1"
 EXP_LIMIT="30"
-STAGING=0
 FIRST_RUN=0
 
 if [[ -z $DOMAIN ]]; then
@@ -40,9 +40,9 @@ if [[ -z $WEBROOT_PATH ]]; then
     exit 1
 fi
 
-if [[ $STAGING -eq 1 ]]; then
-    echo "Using the staging environment"
-    ADDITIONAL="--staging"
+if [[ -z $CERTBOT_LOGS_PATH ]]; then
+    echo "No webroot path set, please fill -e 'CERTBOT_LOGS_PATH=/tmp/letsencrypt'"
+    exit 1
 fi
 
 exp_limit="${EXP_LIMIT:-30}"
@@ -68,12 +68,12 @@ le_renew() {
     docker run --rm --name temp_certbot \
         -v "${CERT_DIR_PATH}:/etc/letsencrypt" \
         -v "${WEBROOT_PATH}:/tmp/letsencrypt" \
-        -v "/data/servers-data/certbot/log:/var/log" \
+        -v "${CERTBOT_LOGS_PATH}:/var/log" \
         certbot/certbot:v3.1.0 certonly \
         --webroot --agree-tos --renew-by-default --non-interactive \
         --preferred-challenges http-01 \
-        --server https://acme-v02.api.letsencrypt.org/directory --text "${ADDITIONAL}" \
-        --email "${EMAIL}" -w /tmp/letsencrypt -d "${DOMAIN}"
+        --server https://acme-v02.api.letsencrypt.org/directory --text \
+        --email "${EMAIL}" -w /tmp/letsencrypt --domain "${DOMAIN}"
 
     le_fixpermissions
     le_hook
