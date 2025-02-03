@@ -3,4 +3,3 @@ application can be used.
 
 * .env         - environment variables used by the website
 * database.sql - initial creation of the database used by the website
-

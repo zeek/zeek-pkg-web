@@ -85,12 +85,12 @@ class PackagesTable extends Table
                 'before' => true,
                 'after' => true,
                 'field' => [
-                    'name', 'readme', 
+                    'name', 'readme',
                     'Metadatas.description', 'Metadatas.script_dir',
                     'Metadatas.plugin_dir', 'Metadatas.build_command',
                     'Metadatas.user_vars', ' Metadatas.test_command',
                     'Metadatas.config_files', 'Metadatas.depends',
-                    'Metadatas.external_depends', 
+                    'Metadatas.external_depends',
                     'Metadatas.suggests',
                     'Metadatas.package_ci',
                     'Tags.name'
