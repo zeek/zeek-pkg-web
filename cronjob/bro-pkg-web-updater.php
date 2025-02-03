@@ -6,7 +6,7 @@
 
 // REQUIRED: Set the location of the bro-pkg-web .env file
 // NOTE: This script should be run by user with read access to the .env file.
-$envfile = '/var/www/bropkg/config/.env';
+$envfile = '/var/www/html/config/.env';
 
 // Set the location of the zkg command line exec
 $zkg_exec = '/usr/local/bin/zkg';
@@ -16,10 +16,19 @@ function fatal($msg) {
     exit(1);
 }
 
-function required_exec($cmd) {
+function timeout_exec($cmd, &$output, &$retval, $timeout=30) {
+    $timeout_cmd = "timeout $timeout $cmd";
+    exec($timeout_cmd, $output, $retval);
+
+    if ($retval == 124) {
+        $output = ["exec($cmd) timed out after $timeout seconds"];
+    }
+}
+
+function required_exec($cmd, $timeout=30) {
     $output=null;
     $retval=null;
-    exec($cmd, $output, $retval);
+    timeout_exec($cmd, $output, $retval, $timeout);
     if ($retval != 0) {
         echo "exec($cmd) failed with status $retval and output:\n";
         print_r($output);
@@ -50,10 +59,10 @@ $pkgarray = required_exec("$zkg_exec list all --nodesc");
 
 $pkgcount = count($pkgarray);
 if ($pkgcount > 0) {
-    echo "Processing $pkgcount packages";
+    echo "Processing $pkgcount packages\n\n";
 }
 foreach ($pkgarray as $pkg) {
-    echo ".";
+    echo "Processing $pkg\n";
 
     // Remove trailing 'local package' information
     $pkg = preg_replace('/\s.*$/', '', $pkg);
@@ -61,7 +70,7 @@ foreach ($pkgarray as $pkg) {
     // Get package info for the current package
     $zkg_output = null;
     $zkg_res = null;
-    exec("$zkg_exec info $pkg --json --nolocal --allvers", $zkg_output, $zkg_res);
+    timeout_exec("$zkg_exec info $pkg --json --nolocal --allvers", $zkg_output, $zkg_res);
 
     if ($zkg_res != 0) {
         echo "\nError.  Failed to get info for '$pkg'. Skipping.  zkg output was:\n";
@@ -150,20 +159,25 @@ foreach ($pkgarray as $pkg) {
             $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             if ($httpcode == 200) {
                 $json = json_decode($output, false);
-                if (property_exists($json, 'subscribers_count')) {
-                    $pkgs[$pkg]['subscribers_count'] = $json->subscribers_count;
+                if (is_null($json)) {
+                    echo "Warning: failed to decode json\n";
                 }
-                if (property_exists($json, 'stargazers_count')) {
-                    $pkgs[$pkg]['stargazers_count'] = $json->stargazers_count;
-                }
-                if (property_exists($json, 'open_issues_count')) {
+                else {
+                    if (property_exists($json, 'subscribers_count')) {
+                        $pkgs[$pkg]['subscribers_count'] = $json->subscribers_count;
+                    }
+                    if (property_exists($json, 'stargazers_count')) {
+                        $pkgs[$pkg]['stargazers_count'] = $json->stargazers_count;
+                    }
+                    if (property_exists($json, 'open_issues_count')) {
                     $pkgs[$pkg]['open_issues_count'] = $json->open_issues_count;
-                }
-                if (property_exists($json, 'forks_count')) {
-                    $pkgs[$pkg]['forks_count'] = $json->forks_count;
-                }
-                if (property_exists($json, 'pushed_at')) {
-                    $pkgs[$pkg]['pushed_at'] = date("Y-m-d H:i:s", strtotime($json->pushed_at));
+                    }
+                    if (property_exists($json, 'forks_count')) {
+                        $pkgs[$pkg]['forks_count'] = $json->forks_count;
+                    }
+                    if (property_exists($json, 'pushed_at')) {
+                        $pkgs[$pkg]['pushed_at'] = date("Y-m-d H:i:s", strtotime($json->pushed_at));
+                    }
                 }
             }
         }
