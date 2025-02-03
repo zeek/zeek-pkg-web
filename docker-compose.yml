@@ -1,0 +1,20 @@
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.nginx
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./bropkg:/var/www/html
+
+  php:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.php
+      target: final
+    restart: always
+    ports:
+      - 9000:9000
