@@ -57,6 +57,9 @@ $refresh = required_exec("$zkg_exec refresh");
 // Get a list of all bro packages
 $pkgarray = required_exec("$zkg_exec list all --nodesc");
 
+$zkg_scratch_dir = required_exec("$zkg_exec config state_dir")[0];
+$zkg_scratch_dir .= "/scratch";
+
 $pkgcount = count($pkgarray);
 if ($pkgcount > 0) {
     echo "Processing $pkgcount packages\n\n";
@@ -184,14 +187,15 @@ foreach ($pkgarray as $pkg) {
         curl_close($ch);
     }
 
+    $parts = explode("/", $pkgs[$pkg]['url']);
+    $pkgshort = end($parts);
+
     // Get all versions of metadatas for the package
     if (property_exists($pkgjson->$pkg, 'metadata')) {
         $versions = array_keys(get_object_vars($pkgjson->$pkg->metadata));
 
         // Clone the code from github to run bro-package-check
         // on each metadata branch version
-        $parts = explode("/", $pkgs[$pkg]['url']);
-        $pkgshort = end($parts);
         $tempdir = mkTempDir();
         $pkgdir = $tempdir . '/' . $pkgshort;
         $chdirok = chdir($tempdir);
@@ -256,6 +260,9 @@ foreach ($pkgarray as $pkg) {
             deleteDir($tempdir);
         }
     }
+
+    // Delete the scratch directory for this package so the disk doesn't fill up
+    deleteDir("$zkg_scratch_dir/$pkgshort");
 }
 if ($pkgcount > 0) {
     echo "Done!\n";
