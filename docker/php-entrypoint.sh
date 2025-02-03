@@ -1,4 +1,4 @@
 #!/bin/sh
 
 cron
-exec docker-php-entrypoint $@
+exec docker-php-entrypoint "$@"
