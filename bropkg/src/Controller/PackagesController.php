@@ -57,11 +57,24 @@ class PackagesController extends AppController
      */
     public function view($id = null)
     {
-        // If no pakcage specified, simply list all packages.
+        // If no package specified, simply list all packages.
         if (is_null($id)) {
             return $this->redirect([
                 'controller' => 'Packages',
                 'action' => 'index'
+            ]);
+        }
+
+        // If there's noise at the end of the URL path (i.e., anything after the
+        // ID in "packages/view/<ID>"), redirect back to the view:
+        $path = parse_url($this->request->url, PHP_URL_PATH);
+        $parts = explode($id, $path);
+
+        if (count($parts) >= 2 && strlen($parts[1]) > 0) {
+            return $this->redirect([
+                'controller' => 'Packages',
+                'action' => 'view',
+                $id
             ]);
         }
 

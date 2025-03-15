@@ -49,6 +49,19 @@ class TagsController extends AppController
             ]);
         } 
 
+        // If there's noise at the end of the URL path (i.e., anything after the
+        // ID in "tags/view/<ID>"), redirect back to the view:
+        $path = parse_url($this->request->url, PHP_URL_PATH);
+        $parts = explode($id, $path);
+
+        if (count($parts) >= 2 && strlen($parts[1]) > 0) {
+            return $this->redirect([
+                'controller' => 'Tags',
+                'action' => 'view',
+                $id
+            ]);
+        }
+
         $tag = $this->Tags->get($id, [
             'contain' => ['Metadatas']
         ]);
