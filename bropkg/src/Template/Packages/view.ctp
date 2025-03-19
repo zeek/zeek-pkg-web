@@ -84,7 +84,7 @@ function strClean($str) {
             <?php if (preg_match('/\.rst$/', $package->readme_name)): ?>
                 <?= $this->RstMarkup->transform($package->readme); ?>
             <?php else: ?>
-                <?= $this->Markdown->transform($package->readme); ?>
+                <?= $this->Markdown->transform($this->MarkdownCanonifier->transform($package->readme, $package->url)); ?>
             <?php endif; ?>
             </article>
         </div>
