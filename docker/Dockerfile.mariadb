@@ -1,0 +1,4 @@
+FROM mariadb:11.6.2
+
+COPY bropkg/config/schema/sessions.sql /bro-sessions.sql
+COPY secrets/database.sql /docker-entrypoint-initdb.d/bro-database.sql

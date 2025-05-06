@@ -6,7 +6,7 @@ use Gregwar\RST\Parser;
 
 /**
  * Rst markup helper
- * 
+ *
  * Render .rst markup files in view templates.
  */
 class RstMarkupHelper extends Helper

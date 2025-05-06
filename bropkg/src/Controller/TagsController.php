@@ -44,10 +44,10 @@ class TagsController extends AppController
         // If no tag specified, simply list all tags.
         if (is_null($id)) {
             return $this->redirect([
-                'controller' => 'Tags', 
+                'controller' => 'Tags',
                 'action' => 'index'
             ]);
-        } 
+        }
 
         // If there's noise at the end of the URL path (i.e., anything after the
         // ID in "tags/view/<ID>"), redirect back to the view:

@@ -62,7 +62,7 @@ function strClean($str) {
               0-1.2-.55-1.2-1.2 0-.65.55-1.2 1.2-1.2.65 0 1.2.55 1.2 1.2 0
               .65-.55 1.2-1.2 1.2z"/></svg> ' .
               $package->forks_count . "</a>\n";
-        echo '<a href="' . $package->url . '/issues' . 
+        echo '<a href="' . $package->url . '/issues' .
              '" target="_blank" title="Issues"
               class="outlinebox"><svg viewBox="0 0 14 16" version="1.1"
               width="14" height="16" aria-hidden="true"><path
@@ -72,7 +72,7 @@ function strClean($str) {
               3H6v5h2V4zm0 6H6v2h2v-2z"/></svg> '.
               $package->open_issues_count . "</a>\n";
         echo '<a href="' . $package->url . '/commit' . '" target="_blank"
-              class="outlinebox">Last Push ' . 
+              class="outlinebox">Last Push ' .
               $package->pushed_at . "</a>\n";
         ?>
     </div>
@@ -91,7 +91,7 @@ function strClean($str) {
     <?php endif; ?>
 
     <?php if (!empty($package->metadatas)): ?>
-        <?php 
+        <?php
             // Find the latest metadata version for the package
             $selected = '';
             $versions = array();
@@ -110,7 +110,7 @@ function strClean($str) {
             <h4><?= __('Package Version :') ?></h4>
             <select class="div-toggle" data-target=".metadata-versions">
                 <?php foreach ($versions as $version): ?>
-                    <?= '<option value="' . $version . '" data-show="._' . strClean($version) . '"' . 
+                    <?= '<option value="' . $version . '" data-show="._' . strClean($version) . '"' .
                         (($version == $selected) ? ' selected="selected"' : '') .
                         '>' . $version . '</option>' ?>
                 <?php endforeach; ?>
@@ -268,7 +268,7 @@ function strClean($str) {
                             $num = count($metadata->tags);
                             for($i = 0; $i < $num; $i++) {
                                 echo $this->Html->link(
-                                    $metadata->tags[$i]->name, 
+                                    $metadata->tags[$i]->name,
                                     ['controller' => 'Tags', 'action' => 'view', $metadata->tags[$i]->id]
                                 );
                                 if ($i < $num-1) {
@@ -313,7 +313,7 @@ function strClean($str) {
                                         }
                                     }
                                 }
-                                
+
                             }
                         }
                         ?>
