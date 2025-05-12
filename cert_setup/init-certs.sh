@@ -13,6 +13,10 @@ if [ -z "$1" ]; then
 
     # PRODUCTION MODE
 
+    # Start up a temporary nginx server for Let's Encrypt to talk to during
+    # cert generation.
+    docker compose -f "${SCRIPT_DIR}/docker-compose.yml" up -d nginx
+
     # Generate certificates using Let's Encrypt
     bash ./ssl-update.sh
 
@@ -23,6 +27,9 @@ if [ -z "$1" ]; then
 0 0,12 * * *    root    /usr/bin/python -c 'import random; import time; time.sleep(random.random() * 3600)' && $SCRIPT_DIR/ssl-update.sh
 EOF
     fi
+
+    # Shut down the temporary nginx server.
+    docker compose -f "${SCRIPT_DIR}/docker-compose.yml" down nginx
 
 elif [ "$1" == "dev" ]; then
 
