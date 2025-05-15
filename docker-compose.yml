@@ -12,6 +12,9 @@ services:
       - ./data/certbot/letsencrypt:/etc/letsencrypt:ro
       - ./data/certbot/www:/var/www/certbot:ro
       - ./data/certbot/mozilla-dhparam.txt:/etc/nginx/mozilla-dhparam.txt:ro
+      - ./data/logs/nginx-access.log:/var/log/nginx/access.log:rw
+      - ./data/logs/nginx-error.log:/var/log/nginx/error.log:rw
+      - ./data/nginx-local-settings:/etc/nginx/conf.d/local-settings:ro
 
   php:
     build:
@@ -19,3 +22,7 @@ services:
       dockerfile: docker/Dockerfile.php
       target: final
     restart: always
+    volumes:
+      - ./docker/php-settings.conf:/usr/local/etc/php-fpm.d/zzz-zeek-php-settings.conf:ro
+      - ./data/logs/php-access.log:/var/log/access.log:rw
+      - ./data/logs/php-error.log:/var/log/error.log:rw
