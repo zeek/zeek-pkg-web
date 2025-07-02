@@ -69,7 +69,7 @@ COPY --chown=www-data:www-data --chmod=640 secrets/.env /var/www/html/config/.en
 RUN python3 -m pip install --no-cache-dir 'bro-package-ci@git+https://github.com/zeek/zeek-package-ci@1117e24fd80f03167ca36749bf5a246a02d86178'
 
 COPY --chmod=755 cronjob/bro-pkg-web-updater.php /usr/local/sbin
-COPY --chmod=755 cronjob/bro-pkg-web-cron.sh /etc/cron.daily
+COPY --chmod=755 cronjob/bro-pkg-web-cron.sh /etc/cron.daily/bro-pkg-web-cron
 
 # Override the existing entrypoint script so that cron can start up too.
 COPY --chmod=700 docker/php-entrypoint.sh /
