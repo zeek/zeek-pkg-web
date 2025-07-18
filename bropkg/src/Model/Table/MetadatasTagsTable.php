@@ -29,7 +29,7 @@ class MetadatasTagsTable extends Table
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
+    public function initialize(array $config): void
     {
         parent::initialize($config);
 
@@ -54,7 +54,7 @@ class MetadatasTagsTable extends Table
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules)
+    public function buildRules(RulesChecker $rules): \Cake\ORM\RulesChecker
     {
         $rules->add($rules->existsIn(['metadata_id'], 'Metadatas'));
         $rules->add($rules->existsIn(['tag_id'], 'Tags'));
