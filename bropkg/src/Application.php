@@ -74,7 +74,7 @@ class Application extends BaseApplication
         $this->addPlugin('Search');
 
         /*
-         * https://github.com/Holt59/cakephp3-bootstrap-helpers
+         * https://github.com/Holt59/cakephp4-bootstrap-helpers
          */
         $this->addPlugin('Bootstrap');
     }
