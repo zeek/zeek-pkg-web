@@ -27,27 +27,6 @@ use Cake\Event\Event;
  */
 class AppController extends Controller
 {
-    public $helpers = [
-        'Form' => [
-            'className' => 'Bootstrap.Form'
-        ],
-        'Html' => [
-            'className' => 'Bootstrap.Html'
-        ],
-        'Modal' => [
-            'className' => 'Bootstrap.Modal'
-        ],
-        'Navbar' => [
-            'className' => 'Bootstrap.Navbar'
-        ],
-        'Paginator' => [
-            'className' => 'Bootstrap.Paginator'
-        ],
-        'Panel' => [
-            'className' => 'Bootstrap.Panel'
-        ]
-    ];
-
     /**
      * Initialization hook method.
      *
@@ -60,6 +39,27 @@ class AppController extends Controller
     public function initialize(): void
     {
         parent::initialize();
+
+        $this->viewBuilder()->setHelpers([
+            'Form' => [
+                'className' => 'Bootstrap.Form'
+            ],
+            'Html' => [
+                'className' => 'Bootstrap.Html'
+            ],
+            'Modal' => [
+                'className' => 'Bootstrap.Modal'
+            ],
+            'Navbar' => [
+                'className' => 'Bootstrap.Navbar'
+            ],
+            'Paginator' => [
+                'className' => 'Bootstrap.Paginator'
+            ],
+            'Panel' => [
+                'className' => 'Bootstrap.Panel'
+            ]
+        ]);
 
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
