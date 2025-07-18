@@ -18,12 +18,22 @@ class PackagesController extends AppController
         ]
     ];
 
-    // https://github.com/tanuck/cakephp-markdown
-    public $helpers = [
-        'Tanuck/Markdown.Markdown' => [
-            'parser' => 'GithubMarkdown'
-        ]
-    ];
+    /**
+     * Initialization hook method.
+     *
+     * Use this method to add common initialization code like loading components.
+     *
+     * e.g. `$this->loadComponent('Security');`
+     *
+     * @return void
+     */
+    public function initialize(): void
+    {
+        parent::initialize();
+
+        // https://github.com/tanuck/cakephp-markdown
+        $this->viewBuilder()->addHelper('Tanuck/Markdown.Markdown', ['parser' => 'GithubMarkdown']);
+    }
 
     /**
      * Index method
