@@ -66,7 +66,7 @@ COPY --chown=www-data:www-data --chmod=640 secrets/.env /var/www/html/config/.en
 # it's stored in /usr/local/bin/bro-package-ci. We explicitly pin to version 0.4.0
 # which is the version the existing live site is using. The version on 'master' has
 # some problems with the dns_resolution check over-matching.
-RUN python3 -m pip install --no-cache-dir 'bro-package-ci@git+https://github.com/zeek/zeek-package-ci@1117e24fd80f03167ca36749bf5a246a02d86178'
+RUN pip3 install --no-cache-dir --break-system-packages 'bro-package-ci@git+https://github.com/zeek/zeek-package-ci@1117e24fd80f03167ca36749bf5a246a02d86178'
 
 COPY --chmod=755 cronjob/bro-pkg-web-updater.php /usr/local/sbin
 COPY --chmod=755 cronjob/bro-pkg-web-cron.sh /etc/cron.daily/bro-pkg-web-cron
