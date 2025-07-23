@@ -54,25 +54,25 @@ RouteBuilder::scope(
 );
 */
 
-RouteBuilder::scope('/', function (RouteBuilder $routes) {
+$routes->scope('/', function (RouteBuilder $rbRoutes) {
     /**
      * Here, we are connecting '/' (base path) to a controller called 'Pages',
      * its action called 'display', and we pass a param to select the view file
-     * to use (in this case, src/Template/Pages/home.ctp)...
+     * to use (in this case, src/templates/Pages/home.ctp)...
      */
-    $routes->connect('/', ['controller' => 'Pages', 'action' => 'display', 'home']);
+    $rbRoutes->connect('/', ['controller' => 'Pages', 'action' => 'display', 'home']);
 
     /**
      * ...and connect the rest of 'Pages' controller's URLs.
      */
-    $routes->connect('/pages/*', ['controller' => 'Pages', 'action' => 'display']);
+    $rbRoutes->connect('/pages/*', ['controller' => 'Pages', 'action' => 'display']);
 
     /**
      * Connect catchall routes for all controllers.
      *
      * Using the argument `DashedRoute`, the `fallbacks` method is a shortcut for
-     *    `$routes->connect('/:controller', ['action' => 'index'], ['routeClass' => 'DashedRoute']);`
-     *    `$routes->connect('/:controller/:action/*', [], ['routeClass' => 'DashedRoute']);`
+     *    `$rbRoutes->connect('/:controller', ['action' => 'index'], ['routeClass' => 'DashedRoute']);`
+     *    `$rbRoutes->connect('/:controller/:action/*', [], ['routeClass' => 'DashedRoute']);`
      *
      * Any route class can be used with this method, such as:
      * - DashedRoute
@@ -83,5 +83,5 @@ RouteBuilder::scope('/', function (RouteBuilder $routes) {
      * You can remove these routes once you've connected the
      * routes you want in your application.
      */
-    $routes->fallbacks(DashedRoute::class);
+    $rbRoutes->fallbacks(DashedRoute::class);
 });
