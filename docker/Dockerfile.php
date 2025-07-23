@@ -94,6 +94,6 @@ COPY --chmod=755 cronjob/bro-pkg-web-updater.php /usr/local/sbin
 COPY --chmod=755 cronjob/bro-pkg-web-cron.sh /etc/cron.daily/bro-pkg-web-cron
 
 # Override the existing entrypoint script so that cron can start up too.
-COPY --chmod=700 docker/php-entrypoint.sh /
+COPY --chmod=700 --chown=www-data:www-data docker/php-entrypoint.sh /
 ENTRYPOINT ["/php-entrypoint.sh"]
 CMD ["php-fpm"]
