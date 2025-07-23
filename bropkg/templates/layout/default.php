@@ -3,7 +3,7 @@ $pageDescription = 'Zeek Package Manager';
 
 // Save the current page to session so we can redirect if needed
 $lastpage = $this->request->getRequestTarget();
-$this->request->session()->write('lastpage', $lastpage);
+$this->request->getSession()->write('lastpage', $lastpage);
 ?>
 <!DOCTYPE html>
 <html lang="en">
