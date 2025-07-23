@@ -41,7 +41,7 @@ class PackagesController extends AppController
     public function index()
     {
         $query = $this->Packages
-            ->find('search', ['search' => $this->request->query])
+            ->find('search', ['search' => $this->request->getQueryParams()])
             ->leftJoinWith('Metadatas')
             ->leftJoinWith('Metadatas.Tags')
             ->contain([
@@ -75,7 +75,7 @@ class PackagesController extends AppController
 
         // If there's noise at the end of the URL path (i.e., anything after the
         // ID in "packages/view/<ID>"), redirect back to the view:
-        $path = parse_url($this->request->url, PHP_URL_PATH);
+        $path = parse_url($this->request->getRequestTarget(), PHP_URL_PATH);
         $parts = explode($id, $path);
 
         if (count($parts) >= 2 && strlen($parts[1]) > 0) {
