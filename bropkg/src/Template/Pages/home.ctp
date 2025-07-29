@@ -14,7 +14,7 @@ $this->assign('title', 'Home');
 
   <div class="row form-group">
     <div class="col-sm-4 col-md-3">
-      <?= $this->Html->link($this->Html->image('/img/bropkgmgr.png',
+      <?= $this->Html->link($this->Html->image('/img/zeekpkgmgr.png',
           ['alt' => 'Zeek Package Manager', 'class' => 'center',
            'width' => '200' ]),
            ['controller' => 'packages'],
