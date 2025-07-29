@@ -22,13 +22,6 @@ $this->request->session()->write('lastpage', $lastpage);
     <?= $this->Html->css('cake') ?>
     <?= $this->Html->css('bro') ?>
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
     <?= $this->Html->script(['https://code.jquery.com/jquery-3.3.1.min.js']) ?>
     <?= $this->Html->script(['https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js']) ?>
 </head>
