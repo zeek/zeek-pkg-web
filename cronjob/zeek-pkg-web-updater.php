@@ -4,7 +4,7 @@
 // This script should be added to root's nightly cron to read the
 // current list of Zeek packages using the zkg command line utility.
 
-// REQUIRED: Set the location of the bro-pkg-web .env file
+// REQUIRED: Set the location of the zeek-pkg-web .env file
 // NOTE: This script should be run by user with read access to the .env file.
 $envfile = '/var/www/html/config/.env';
 
@@ -51,10 +51,10 @@ $sqlpass     = searchEnvFile('DB_PASSWORD', $envlines);
 // make database updating as fast as possible.
 $pkgs = array();
 
-// Refresh the local bro package listing.
+// Refresh the local zeek package listing.
 $refresh = required_exec("$zkg_exec refresh");
 
-// Get a list of all bro packages
+// Get a list of all zeek packages
 $pkgarray = required_exec("$zkg_exec list all --nodesc");
 
 $zkg_scratch_dir = required_exec("$zkg_exec config state_dir")[0];

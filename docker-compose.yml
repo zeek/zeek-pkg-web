@@ -8,7 +8,7 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - ./bropkg/webroot:/var/www/html:ro
+      - ./zeekpkg/webroot:/var/www/html:ro
       - ./data/certbot/letsencrypt:/etc/letsencrypt:ro
       - ./data/certbot/www:/var/www/certbot:ro
       - ./data/certbot/mozilla-dhparam.txt:/etc/nginx/mozilla-dhparam.txt:ro

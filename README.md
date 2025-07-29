@@ -65,5 +65,5 @@ also create a Let's Encrypt cert based on the hostname set in the
 
 ```
 docker exec -it zeek-pkg-web-php-1 /bin/bash
-/etc/cron.daily/bro-pkg-web-cron.sh
+/etc/cron.daily/zeek-pkg-web-cron.sh
 ```

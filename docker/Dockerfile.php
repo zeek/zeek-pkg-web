@@ -50,10 +50,10 @@ RUN docker-php-ext-install \
 # Composer 2.3 dropped support for php <7.2, so specify the last
 # 2.2 version here.
 COPY --from=composer:2.2 /usr/bin/composer /usr/bin/composer
-COPY bropkg/composer.json .
+COPY zeekpkg/composer.json .
 RUN composer install
 
-COPY bropkg .
+COPY zeekpkg .
 RUN composer dumpautoload --optimize
 
 # Build a final image from the above parts.
@@ -68,8 +68,8 @@ COPY --chown=www-data:www-data --chmod=640 secrets/.env /var/www/html/config/.en
 # some problems with the dns_resolution check over-matching.
 RUN python3 -m pip install --no-cache-dir 'bro-package-ci@git+https://github.com/zeek/zeek-package-ci@1117e24fd80f03167ca36749bf5a246a02d86178'
 
-COPY --chmod=755 cronjob/bro-pkg-web-updater.php /usr/local/sbin
-COPY --chmod=755 cronjob/bro-pkg-web-cron.sh /etc/cron.daily/bro-pkg-web-cron
+COPY --chmod=755 cronjob/zeek-pkg-web-updater.php /usr/local/sbin
+COPY --chmod=755 cronjob/zeek-pkg-web-cron.sh /etc/cron.daily/zeek-pkg-web-cron
 
 # Override the existing entrypoint script so that cron can start up too.
 COPY --chmod=700 docker/php-entrypoint.sh /
