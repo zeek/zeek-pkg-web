@@ -6,7 +6,7 @@
   */
 
 function strNotNull($str) {
-    return ((strlen($str) > 0) && (strtolower($str) != 'null'));
+    return ($str && (strlen($str) > 0) && (strtolower($str) != 'null'));
 }
 function strClean($str) {
     return preg_replace('/[^a-zA-Z0-9]/', '_', $str);
