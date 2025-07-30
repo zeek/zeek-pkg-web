@@ -6,7 +6,7 @@ $lastpage = $this->request->getRequestTarget();
 $this->request->getSession()->write('lastpage', $lastpage);
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="font-size: 14px">
 <head>
     <?= $this->Html->charset() ?>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -17,17 +17,18 @@ $this->request->getSession()->write('lastpage', $lastpage);
         <?= $this->fetch('title') ?>
     </title>
 
-    <?= $this->Html->css('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css') ?>
-    <?= $this->Html->css('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css') ?>
+    <?= $this->Html->css('https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css') ?>
+    <?= $this->Html->css('bootstrap-theme.min') ?>
+    <?= $this->Html->css('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css') ?>
     <?= $this->Html->css('cake') ?>
     <?= $this->Html->css('zeek') ?>
 
-    <?= $this->Html->script(['https://code.jquery.com/jquery-3.3.1.min.js']) ?>
-    <?= $this->Html->script(['https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js']) ?>
+    <?= $this->Html->script(['https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js']) ?>
+    <?= $this->Html->script(['https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js']) ?>
 </head>
 <body>
-    <?= $this->Navbar->create('<img src="/img/zeekpkgmgr.png" alt="Zeek Package Manager" width="40" style="margin-top:-10px;" title="Home" />',
-        ['fixed' => 'top', 'fluid' => true]) ?>
+    <?= $this->Navbar->create('<img src="/img/zeekpkgmgr.png" alt="Zeek Package Manager" width="40" style="margin-top:-10px;margin-bottom:-10px" title="Home" />',
+        ['fixed' => 'top', 'collapse' => false]) ?>
     <?= $this->Navbar->beginMenu() ?>
     <?= $this->Navbar->link('Packages', ['controller' => 'packages'],
         ['class' => (preg_match('%^/packages%', $lastpage) ? 'active' : '')]) ?>
@@ -37,7 +38,8 @@ $this->request->getSession()->write('lastpage', $lastpage);
     <?= $this->Form->create(null, [
         'url' => ['controller' => 'Packages', 'action' => 'index'],
         'valueSources' => ['query'],
-        'class' => 'navbar-form navbar-right'
+        'class' => 'form-inline navbar-right',
+        'inline' => true
         ]) ?>
     <div class="form-group">
         <?= $this->Form->text('q', [
@@ -47,8 +49,7 @@ $this->request->getSession()->write('lastpage', $lastpage);
         'class' => 'form-control'
         ]) ?>
     </div>
-    <button type="submit" class="btn btn-default"><span class="glyphicon
-        glyphicon-search"></span></button>
+    <button type="submit" class="btn btn-secondary"><span class="fa fa-search"></span></button>
     <?= $this->Form->end() ?>
     <?= $this->Navbar->end() ?>
 
