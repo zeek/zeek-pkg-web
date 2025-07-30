@@ -6,24 +6,22 @@
 $this->assign('title', 'Home');
 ?>
 
-  <div class="row form-group">
-    <div class="col">
-      <h1><?= __('Zeek Package Browser') ?></h1>
-    </div>
+  <div class="row mb-3">
+    <h1>Zeek Package Browser</h1>
   </div>
 
-  <div class="row form-group">
+  <div class="row">
     <div class="col-sm-4 col-md-3">
       <?= $this->Html->link($this->Html->image('/img/zeekpkgmgr.png',
           ['alt' => 'Zeek Package Manager', 'class' => 'center',
-           'width' => '200' ]),
-           ['controller' => 'packages'],
-           ['escapeTitle' => false,
-            'title' => 'View Package List']) ?>
+              'width' => '200' ]),
+          ['controller' => 'packages'],
+          ['escapeTitle' => false,
+              'title' => 'View Package List']) ?>
     </div>
     <div class="col-sm-8 col-md-9">
-      <div class="row form-group">
-        <div class="col">
+      <div>
+        <div class="col mb-3">
           The <?= $this->Html->link(__('Zeek Package Manager'),
               'https://docs.zeek.org/projects/package-manager',
               ['target' => '_blank']) ?>
@@ -40,31 +38,31 @@ $this->assign('title', 'Home');
           is updated once a day.)
         </div>
       </div>
-      <div class="row form-group">
+      <div>
         <div class="col">
           Once you have found a package you want to install, use the
           <?= $this->Html->link(__('Quickstart Guide'),
-          'https://docs.zeek.org/projects/package-manager/en/stable/quickstart.html',
-          ['target' => '_blank']) ?> to install the <kbd>zkg</kbd> command line
+              'https://docs.zeek.org/projects/package-manager/en/stable/quickstart.html',
+              ['target' => '_blank']) ?> to install the <kbd>zkg</kbd> command line
           utility. Then use the <?= $this->Html->link(__('install'),
-          'https://docs.zeek.org/projects/package-manager/en/stable/zkg.html#install',
-          ['target' => '_blank']) ?> command to install your selected package. For
+              'https://docs.zeek.org/projects/package-manager/en/stable/zkg.html#install',
+              ['target' => '_blank']) ?> command to install your selected package. For
           example:
         </div>
       </div>
     </div>
   </div>
 
-  <div class="row form-group">
-    <div class="col">
+  <div class="row">
+    <div class="col mt-4 mb-4">
       <pre>zkg install zeek/ncsa/bro-doctor</pre>
     </div>
   </div>
 
-  <hr/>
+  <hr class="my-4"/>
 
-  <div class="row form-group">
-    <div class="col-sm-offset-5">
+  <div class="row">
+    <div class="offset-5">
       <h3>
         <?= $this->Html->link('View List of ' . $packagecount . ' Packages',
           ['controller' => 'packages']) ?>
@@ -72,10 +70,10 @@ $this->assign('title', 'Home');
     </div>
   </div>
 
-  <hr/>
+  <hr class="my-4"/>
 
-  <div class="row form-group">
-    <div class="col-sm-3 col-sm-offset-2">
+  <div class="row">
+    <div class="col-sm-3 offset-2">
       <h4 class="text-center">Top Watched</h4>
       <?php
         if (!empty($topwatched)) {

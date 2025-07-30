@@ -50,6 +50,8 @@ RUN apt-get update -y \
  && apt-get install --no-install-recommends -y \
     libicu-dev=76.1-4 \
     libzip-dev=1.11.3-2 \
+    npm=9.2.0~ds1-3 \
+    unzip=6.0-29 \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
@@ -63,6 +65,9 @@ RUN composer install
 
 COPY bropkg .
 RUN composer dumpautoload --optimize
+
+# Install the necessary files for Bootstrap via CakePHP
+RUN bin/cake plugin load BootstrapUI && bin/cake bootstrap install
 
 # Build a final image from the above parts.
 FROM base AS final

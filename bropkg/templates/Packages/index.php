@@ -4,7 +4,7 @@
   * @var \App\Model\Entity\Package[]|\Cake\Collection\CollectionInterface $packages
   */
 ?>
-<div class="packages index columns content">
+<div class="packages content">
     <h3><?= __('Packages') ?></h3>
     <?php foreach ($packages as $package): ?>
     <div class="packagebox">
@@ -17,14 +17,19 @@
         </p>
     </div>
     <?php endforeach; ?>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first() ?>
-            <?= $this->Paginator->prev() ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next() ?>
-            <?= $this->Paginator->last() ?>
+    <div class="paginator row justify-content-md-center">
+        <ul class="pagination col-md-auto">
+            <?= $this->Paginator->first('<< First') ?>&nbsp;
+            <?= $this->Paginator->prev('< Previous') ?>&nbsp;
+            <?= $this->Paginator->numbers() ?>&nbsp;
+            <?= $this->Paginator->next('Next >') ?>&nbsp;
+            <?= $this->Paginator->last('Last >>') ?>
         </ul>
-        <p><?= $this->Paginator->counter('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total') ?></p>
+<?
+// TODO: text-black-50 is deprecated in bootstrap 5.1.0 and will be removed
+// in a later version. it should be replaced with text-black text-opacity-50
+// eventually
+?>
+        <p class="text-black-50 text-end"><?= $this->Paginator->counter('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total') ?></p>
     </div>
 </div>
