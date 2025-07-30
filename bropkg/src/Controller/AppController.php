@@ -46,7 +46,7 @@ class AppController extends Controller
         $this->viewBuilder()->addHelper('Modal', ['className' => 'Bootstrap.Modal']);
         $this->viewBuilder()->addHelper('Navbar', ['className' => 'Bootstrap.Navbar']);
         $this->viewBuilder()->addHelper('Paginator', ['className' => 'Bootstrap.Paginator']);
-        $this->viewBuilder()->addHelper('Panel', ['className' => 'Bootstrap.Panel']);
+        $this->viewBuilder()->addHelper('Card', ['className' => 'Bootstrap.Card']);
 
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
@@ -57,8 +57,10 @@ class AppController extends Controller
          */
         //$this->loadComponent('FormProtection');
 
+        /*
         $this->loadComponent('Search.Prg', [
             'actions' => ['index']
         ]);
+        */
     }
 }

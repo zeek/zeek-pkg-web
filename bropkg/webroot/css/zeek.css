@@ -4,6 +4,7 @@ body {
   padding-right: 10px;
   min-width: 0px;
   background-color: aliceblue;
+  color: #333;
 }
 li.libutton {
   border: 2px solid white;
@@ -52,7 +53,9 @@ code {
   color: #000;
 }
 h1,h2,h3,h4,h5,h6 {
-  color: #036;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 500;
+    color: #036;
 }
 .content h1 {
   color: #036;
@@ -81,4 +84,34 @@ h1,h2,h3,h4,h5,h6 {
 }
 .row {
   max-width: 100%;
+}
+
+.navbar {
+    background-image: linear-gradient(rgb(255, 255, 255) 0px, rgb(248, 248, 248) 100%);
+    border-width: 0px;
+    box-shadow: rgba(255, 255, 255, 0.15) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.075) 0px 1px 5px 0px
+}
+
+.navbar-brand {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.nav-item {
+    padding-left: 10px;
+}
+
+pre {
+    background-color: #FFF;
+    border: 1px solid #999;
+    box-shadow: rgba(0, 0, 0, 0.24) 1px 2px 4px 0px;
+    padding: 5px;
+}
+
+/* This was part of Bootstrap 3.x but was replaced with an attribute
+ * selector called [hidden] in Bootstrap 4. The class is easier to use
+ * for our purposes.
+ */
+.hide {
+    display: none !important;
 }

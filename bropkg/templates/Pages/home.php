@@ -6,13 +6,13 @@
 $this->assign('title', 'Home');
 ?>
 
-  <div class="row form-group">
+  <div class="form-row form-group">
     <div class="col">
       <h1><?= __('Zeek Package Browser') ?></h1>
     </div>
   </div>
 
-  <div class="row form-group">
+  <div class="form-row form-group">
     <div class="col-sm-4 col-md-3">
       <?= $this->Html->link($this->Html->image('/img/zeekpkgmgr.png',
           ['alt' => 'Zeek Package Manager', 'class' => 'center',
@@ -22,7 +22,7 @@ $this->assign('title', 'Home');
             'title' => 'View Package List']) ?>
     </div>
     <div class="col-sm-8 col-md-9">
-      <div class="row form-group">
+      <div class="form-row form-group">
         <div class="col">
           The <?= $this->Html->link(__('Zeek Package Manager'),
               'https://docs.zeek.org/projects/package-manager',
@@ -40,7 +40,7 @@ $this->assign('title', 'Home');
           is updated once a day.)
         </div>
       </div>
-      <div class="row form-group">
+      <div class="form-row form-group">
         <div class="col">
           Once you have found a package you want to install, use the
           <?= $this->Html->link(__('Quickstart Guide'),
@@ -55,16 +55,16 @@ $this->assign('title', 'Home');
     </div>
   </div>
 
-  <div class="row form-group">
-    <div class="col">
+  <div class="form-row form-group">
+    <div class="col zeek-home-command-example">
       <pre>zkg install zeek/ncsa/bro-doctor</pre>
     </div>
   </div>
 
   <hr/>
 
-  <div class="row form-group">
-    <div class="col-sm-offset-5">
+  <div class="form-row form-group">
+    <div class="offset-5">
       <h3>
         <?= $this->Html->link('View List of ' . $packagecount . ' Packages',
           ['controller' => 'packages']) ?>
@@ -74,8 +74,8 @@ $this->assign('title', 'Home');
 
   <hr/>
 
-  <div class="row form-group">
-    <div class="col-sm-3 col-sm-offset-2">
+  <div class="form-row form-group">
+    <div class="col-sm-3 offset-2">
       <h4 class="text-center">Top Watched</h4>
       <?php
         if (!empty($topwatched)) {
