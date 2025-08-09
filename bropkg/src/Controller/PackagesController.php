@@ -31,7 +31,7 @@ class PackagesController extends AppController
     {
         parent::initialize();
 
-        // https://github.com/tanuck/cakephp-markdown
+        // https://github.com/kitzberger/cakephp-markdown
         $this->viewBuilder()->addHelper('Tanuck/Markdown.Markdown', ['parser' => 'GithubMarkdown']);
     }
 
