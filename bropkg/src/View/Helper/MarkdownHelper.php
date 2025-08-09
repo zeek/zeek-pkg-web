@@ -2,16 +2,36 @@
 namespace App\View\Helper;
 
 use Cake\View\Helper;
+use League\CommonMark\CommonMarkConverter;
 
 /**
- * Markdown canonifier
+ * Markdown Helper
  *
  * This massages Markdown text to make the outcome suitable for rendering
  * on our site. The expectation is that the output is again transformed
  * by a markdown renderer -- see Template/Packages/view.ctp.
  */
-class MarkdownCanonifierHelper extends Helper
+class MarkdownHelper extends Helper
 {
+  protected $_converter;
+
+  /**
+   * Parse Markdown text to HTML.
+   */
+  public function parse($text)
+  {
+      return $this->_getParser()->convert($text);
+  }
+
+  protected function _getParser()
+  {
+      if ( $this->_converter !== null ) {
+         return $this->_converter;
+      }
+      $this->_converter = new CommonMarkConverter();
+      return $this->_converter;
+  }
+
   /**
    * Canonify Markdown content.
    *
@@ -19,7 +39,7 @@ class MarkdownCanonifierHelper extends Helper
    * @param string $url The package URL for this Markdown.
    * @return bool|string
    */
-  public function transform($input, $url)
+  public function canonify($input, $url)
   {
       if (!is_string($input)) {
           return false;

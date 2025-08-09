@@ -64,11 +64,6 @@ class Application extends BaseApplication
         }
 
         /*
-         * https://github.com/tanuck/cakephp-markdown
-         */
-        $this->addPlugin('Tanuck/Markdown');
-
-        /*
          * https://github.com/FriendsOfCake/search
          */
         $this->addPlugin('Search');
