@@ -5,17 +5,17 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y \
  && apt-get install --no-install-recommends -y \
-    cron=3.0pl1-162 \
-    git=1:2.39.5-0+deb12u2 \
-    libicu-dev=72.1-3+deb12u1 \
-    libzip-dev=1.7.3-1+b1 \
-    procps=2:4.0.2-3 \
-    python3-git=3.1.30-1+deb12u2 \
-    python3-pip=23.0.1+dfsg-1 \
-    python3-semantic-version=2.9.0-2 \
-    python3-setuptools=66.1.1-1+deb12u1 \
-    unzip=6.0-28 \
-    vim=2:9.0.1378-2+deb12u2 \
+    cron=3.0pl1-197 \
+    git=1:2.47.2-0.2 \
+    libicu-dev=76.1-4 \
+    libzip-dev=1.11.3-2 \
+    procps=2:4.0.4-9 \
+    python3-git=3.1.44-1 \
+    python3-pip=25.1.1+dfsg-1 \
+    python3-semantic-version=2.10.0-3 \
+    python3-setuptools=78.1.1-0.1 \
+    unzip=6.0-29 \
+    vim=2:9.1.1230-2 \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* \
  # The source packages for these extensions come with the php docker image
@@ -47,8 +47,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y \
  && apt-get install --no-install-recommends -y \
-    libicu-dev=72.1-3+deb12u1 \
-    libzip-dev=1.7.3-1+b1 \
+    libicu-dev=76.1-4 \
+    libzip-dev=1.11.3-2 \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
