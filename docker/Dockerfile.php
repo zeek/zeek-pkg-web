@@ -2,6 +2,12 @@ FROM php:7.1.33-fpm AS base
 WORKDIR /var/www/html
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHON_VERSION=3.13.6
+
+# # php:7.1.33-fpm is based on Debian 10/Buster, which doesn't have paths in
+# # the default apt repos anymore. Swap over to archive.debian.org.
+RUN sed -i 's/deb\.debian/archive.debian/g' /etc/apt/sources.list \
+    && sed -i 's/security\.debian/archive.debian/g' /etc/apt/sources.list
 
 RUN apt-get update -y \
  && apt-get install --no-install-recommends -y \
@@ -9,9 +15,9 @@ RUN apt-get update -y \
     git=1:2.20.1-2+deb10u9 \
     libicu-dev=63.1-6+deb10u3 \
     libzip-dev=1.5.1-4 \
+    pipx=0.12.1.0-1 \
     procps=2:3.3.15-2 \
-    python3-pip=18.1-5 \
-    python3-setuptools=40.8.0-1 \
+    python3-venv=3.7.3-1 \
     unzip=6.0-23+deb10u3 \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* \
@@ -23,10 +29,19 @@ RUN apt-get update -y \
     mysqli \
     pdo \
     pdo_mysql \
-    zip \
- # Install an initial version of zkg. This gets updated by cron
- # every night before updating the packages list.
- && pip3 install --no-cache-dir GitPython==3.1.44 semantic-version==2.10.0 zkg==3.0.1
+    zip
+
+# Install 'uv' to get a newer version of Python than is available on the
+# base image.
+# This is needed because of the pipe in the next command.
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN curl -LsSf "https://astral.sh/uv/install.sh" | sh \
+ && echo ". ${HOME}/.local/bin/env" >> "${HOME}/.profile" \
+ && . "${HOME}/.local/bin/env" \
+ && uv python install "${PYTHON_VERSION}" \
+ && uv venv "${HOME}/uv-venv" \
+ && . "${HOME}/uv-venv/bin/activate" \
+ && uv pip install zkg==3.1.0
 
 # We could use the composer image directly here but using the php
 # one guarantees we have the same version of php installed. Instead
@@ -35,6 +50,11 @@ FROM php:7.1.33-fpm AS build
 WORKDIR /var/www/html
 
 ENV DEBIAN_FRONTEND=noninteractive
+
+# # php:7.1.33-fpm is based on Debian 10/Buster, which doesn't have paths in
+# # the default apt repos anymore. Swap over to archive.debian.org.
+RUN sed -i 's/deb\.debian/archive.debian/g' /etc/apt/sources.list \
+    && sed -i 's/security\.debian/archive.debian/g' /etc/apt/sources.list
 
 RUN apt-get update -y \
  && apt-get install --no-install-recommends -y \
@@ -62,11 +82,13 @@ FROM base AS final
 COPY --from=build --chown=www-data:www-data /var/www/html /var/www/html
 COPY --chown=www-data:www-data --chmod=640 secrets/.env /var/www/html/config/.env
 
-# zeek-package-ci is used by the cronjob to sanity check zeek packages. On the image,
-# it's stored in /usr/local/bin/bro-package-ci. We explicitly pin to version 0.4.0
-# which is the version the existing live site is using. The version on 'master' has
-# some problems with the dns_resolution check over-matching.
-RUN python3 -m pip install --no-cache-dir 'bro-package-ci@git+https://github.com/zeek/zeek-package-ci@1117e24fd80f03167ca36749bf5a246a02d86178'
+# # zeek-package-ci is used by the cronjob to sanity check zeek packages. On the image,
+# # it's stored in /usr/local/bin/bro-package-ci. We explicitly pin to version 0.4.0
+# # which is the version the existing live site is using. The version on 'master' has
+# # some problems with the dns_resolution check over-matching.
+RUN . "${HOME}/.local/bin/env" \
+ && . "${HOME}/uv-venv/bin/activate" \
+ && uv pip install --no-cache-dir "bro-package-ci@git+https://github.com/zeek/zeek-package-ci@1117e24fd80f03167ca36749bf5a246a02d86178"
 
 COPY --chmod=755 cronjob/bro-pkg-web-updater.php /usr/local/sbin
 COPY --chmod=755 cronjob/bro-pkg-web-cron.sh /etc/cron.daily/bro-pkg-web-cron

@@ -9,7 +9,7 @@
 $envfile = '/var/www/html/config/.env';
 
 // Set the location of the zkg command line exec
-$zkg_exec = '/usr/local/bin/zkg';
+$zkg_exec = '/root/uv-venv/bin/zkg';
 
 function fatal($msg) {
     echo "$msg\n";
