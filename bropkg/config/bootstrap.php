@@ -31,6 +31,11 @@ require __DIR__ . DIRECTORY_SEPARATOR . 'paths.php';
  */
 require CORE_PATH . 'config' . DS . 'bootstrap.php';
 
+/**
+ * Load the CakePHP global aliases. This is primarily so env() is available.
+ */
+require CAKE . 'functions.php';
+
 use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\Core\Configure\Engine\PhpConfig;

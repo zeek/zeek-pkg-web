@@ -67,11 +67,6 @@ class Application extends BaseApplication
          * https://github.com/FriendsOfCake/search
          */
         $this->addPlugin('Search');
-
-        /*
-         * https://github.com/FriendsOfCake/bootstrap-ui
-         */
-        $this->addPlugin('BootstrapUI');
     }
 
     /**

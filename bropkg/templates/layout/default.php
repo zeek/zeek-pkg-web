@@ -21,7 +21,6 @@ $this->request->getSession()->write('lastpage', $lastpage);
     <?
     echo $this->Html->css('BootstrapUI.bootstrap.min');
     echo $this->Html->css(['BootstrapUI./font/bootstrap-icons', 'BootstrapUI./font/bootstrap-icon-sizes']);
-    echo $this->Html->script(['BootstrapUI.popper.min', 'BootstrapUI.bootstrap.min']);
     echo $this->Html->script('https://code.jquery.com/jquery-3.7.1.min.js', [],
 			  ['integrity' => 'sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=',
 			   'crossorigin' => 'anonymous']);

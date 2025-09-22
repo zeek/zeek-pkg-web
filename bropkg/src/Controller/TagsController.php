@@ -13,7 +13,7 @@ use Cake\ORM\TableRegistry;
  */
 class TagsController extends AppController
 {
-    public $paginate = [
+    public array $paginate = [
         'order' => [
             'Tags.name' => 'asc'
         ]
@@ -29,7 +29,7 @@ class TagsController extends AppController
         $tags = $this->paginate($this->Tags);
 
         $this->set(compact('tags'));
-        $this->set('_serialize', ['tags']);
+        $this->viewBuilder()->setOption('serialize', ['tags']);
     }
 
     /**
@@ -62,9 +62,7 @@ class TagsController extends AppController
             ]);
         }
 
-        $tag = $this->Tags->get($id, [
-            'contain' => ['Metadatas']
-        ]);
+        $tag = $this->Tags->get($id, contain: ['Metadatas']);
 
         /* Get list of associated package ids */
         $pkglist = array();
@@ -73,7 +71,7 @@ class TagsController extends AppController
         }
         $pkgids = array_keys($pkglist);
 
-        $packagesTable = TableRegistry::get('Packages');
+        $packagesTable = TableRegistry::getTableLocator()->get('Packages');
         $packages = $this->paginate(
             $packagesTable
             ->find()
@@ -82,6 +80,6 @@ class TagsController extends AppController
 
         $this->set('tag', $tag);
         $this->set(compact('packages'));
-        $this->set('_serialize', ['packages']);
+        $this->viewBuilder()->setOption('serialize', ['packages']);
     }
 }

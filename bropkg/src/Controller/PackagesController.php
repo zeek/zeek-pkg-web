@@ -12,7 +12,7 @@ use App\Controller\AppController;
  */
 class PackagesController extends AppController
 {
-    public $paginate = [
+    public array $paginate = [
         'order' => [
             'Packages.short_name' => 'asc'
         ]
@@ -41,19 +41,19 @@ class PackagesController extends AppController
     public function index()
     {
         $query = $this->Packages
-            ->find('search', ['search' => $this->request->getQueryParams()])
+            ->find('search', search: $this->request->getQueryParams())
             ->leftJoinWith('Metadatas')
             ->leftJoinWith('Metadatas.Tags')
             ->contain([
                 'Metadatas' => ['sort' => ['Metadatas.version' => 'DESC']]
             ])
-            ->group('Packages.id')
+            ->groupBy('Packages.id')
             ;
 
         $packages = $this->paginate($query);
 
         $this->set(compact('packages'));
-        $this->set('_serialize', ['packages']);
+        $this->viewBuilder()->setOption('serialize', ['packages']);
     }
 
     /**
@@ -87,12 +87,10 @@ class PackagesController extends AppController
         }
 
         $packages = $this->Packages->find();
-        $package = $this->Packages->get($id, [
-            'contain' => ['Metadatas.Tags']
-        ]);
+        $package = $this->Packages->get($id, contain: ['Metadatas.Tags']);
 
         $this->set('package', $package);
         $this->set('packages', $packages);
-        $this->set('_serialize', ['package']);
+        $this->viewBuilder()->setOption('serialize', ['package']);
     }
 }
