@@ -59,6 +59,13 @@ RUN docker-php-ext-install \
     intl \
     zip
 
+# Composer really doesn't like running as root and complains when you do.
+# It also makes a best effort to detect running in docker container so it
+# can allow that, but sometimes it misses it and things don't work right.
+# Force it to allow running as root so that PHP plugins are loaded
+# correctly. See https://getcomposer.org/doc/faqs/how-to-install-untrusted-packages-safely.md#running-composer-inside-docker-podman-containers for more detail.
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
 COPY bropkg/composer.json .
 RUN composer install
