@@ -6,6 +6,9 @@
     padding-right: 7rem !important;
     padding-left: 7rem !important;
 }
+.container a {
+    text-decoration: none;
+}
 
 body {
     background-color: aliceblue;
@@ -43,11 +46,6 @@ select.div-toggle {
     margin-bottom: 20px;
     padding: 10px 10px 0px 10px;
     background-color: white;
-    text-decoration: none;
-}
-
-.packages a {
-    text-decoration: none;
 }
 
 a {
