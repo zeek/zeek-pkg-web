@@ -30,7 +30,7 @@ class PackagesTable extends Table
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
+    public function initialize(array $config): void
     {
         parent::initialize($config);
 
@@ -44,6 +44,24 @@ class PackagesTable extends Table
         $this->hasMany('Metadatas', [
             'foreignKey' => 'package_id'
         ]);
+
+        // Setup search filter using search manager
+        $this->searchManager()
+            ->add('q', 'Search.Like', [
+                'before' => true,
+                'after' => true,
+                'fields' => [
+                    'name', 'readme',
+                    'Metadatas.description', 'Metadatas.script_dir',
+                    'Metadatas.plugin_dir', 'Metadatas.build_command',
+                    'Metadatas.user_vars', ' Metadatas.test_command',
+                    'Metadatas.config_files', 'Metadatas.depends',
+                    'Metadatas.external_depends',
+                    'Metadatas.suggests',
+                    'Metadatas.package_ci',
+                    'Tags.name'
+                ]
+           ]);
     }
 
     /**
@@ -52,7 +70,7 @@ class PackagesTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator)
+    public function validationDefault(Validator $validator): \Cake\Validation\Validator
     {
         $validator
             ->uuid('id')
@@ -72,32 +90,5 @@ class PackagesTable extends Table
             ->allowEmpty('readme');
 
         return $validator;
-    }
-
-    /**
-     * https://github.com/FriendsOfCake/search
-     */
-    public function searchManager()
-    {
-        $searchManager = $this->behaviors()->Search->searchManager();
-        $searchManager
-            ->add('q', 'Search.Like', [
-                'before' => true,
-                'after' => true,
-                'field' => [
-                    'name', 'readme',
-                    'Metadatas.description', 'Metadatas.script_dir',
-                    'Metadatas.plugin_dir', 'Metadatas.build_command',
-                    'Metadatas.user_vars', ' Metadatas.test_command',
-                    'Metadatas.config_files', 'Metadatas.depends',
-                    'Metadatas.external_depends',
-                    'Metadatas.suggests',
-                    'Metadatas.package_ci',
-                    'Tags.name'
-                ]
-
-            ]);
-
-        return $searchManager;
     }
 }

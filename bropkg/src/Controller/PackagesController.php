@@ -12,18 +12,26 @@ use App\Controller\AppController;
  */
 class PackagesController extends AppController
 {
-    public $paginate = [
+    public array $paginate = [
         'order' => [
             'Packages.short_name' => 'asc'
         ]
     ];
 
-    // https://github.com/tanuck/cakephp-markdown
-    public $helpers = [
-        'Tanuck/Markdown.Markdown' => [
-            'parser' => 'GithubMarkdown'
-        ]
-    ];
+    /**
+     * Initialization hook method.
+     *
+     * Use this method to add common initialization code like loading components.
+     *
+     * e.g. `$this->loadComponent('Security');`
+     *
+     * @return void
+     */
+    public function initialize(): void
+    {
+        parent::initialize();
+        $this->loadComponent('Search.Search');
+    }
 
     /**
      * Index method
@@ -33,19 +41,19 @@ class PackagesController extends AppController
     public function index()
     {
         $query = $this->Packages
-            ->find('search', ['search' => $this->request->query])
+            ->find('search', search: $this->request->getQueryParams())
             ->leftJoinWith('Metadatas')
             ->leftJoinWith('Metadatas.Tags')
             ->contain([
                 'Metadatas' => ['sort' => ['Metadatas.version' => 'DESC']]
             ])
-            ->group('Packages.id')
+            ->groupBy('Packages.id')
             ;
 
         $packages = $this->paginate($query);
 
         $this->set(compact('packages'));
-        $this->set('_serialize', ['packages']);
+        $this->viewBuilder()->setOption('serialize', ['packages']);
     }
 
     /**
@@ -67,7 +75,7 @@ class PackagesController extends AppController
 
         // If there's noise at the end of the URL path (i.e., anything after the
         // ID in "packages/view/<ID>"), redirect back to the view:
-        $path = parse_url($this->request->url, PHP_URL_PATH);
+        $path = parse_url($this->request->getRequestTarget(), PHP_URL_PATH);
         $parts = explode($id, $path);
 
         if (count($parts) >= 2 && strlen($parts[1]) > 0) {
@@ -79,12 +87,10 @@ class PackagesController extends AppController
         }
 
         $packages = $this->Packages->find();
-        $package = $this->Packages->get($id, [
-            'contain' => ['Metadatas.Tags']
-        ]);
+        $package = $this->Packages->get($id, contain: ['Metadatas.Tags']);
 
         $this->set('package', $package);
         $this->set('packages', $packages);
-        $this->set('_serialize', ['package']);
+        $this->viewBuilder()->setOption('serialize', ['package']);
     }
 }

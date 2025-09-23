@@ -24,7 +24,7 @@ class MetadatasTag extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         '*' => true,
         'metadata_id' => false,
         'tag_id' => false

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -13,15 +15,35 @@
  */
 namespace App\View;
 
+use BootstrapUI\View\UIViewTrait;
 use Cake\View\View;
 
 /**
  * Application View
  *
- * Your application’s default view class
+ * Your application's default view class
  *
- * @link https://book.cakephp.org/3.0/en/views.html#the-app-view
+ * @link https://book.cakephp.org/4/en/views.html#the-app-view
  */
 class AppView extends View
 {
+    use UIViewTrait;
+
+    /**
+     * Initialization hook method.
+     *
+     * Use this method to add common initialization code like loading helpers.
+     *
+     * e.g. `$this->loadHelper('Html');`
+     *
+     * @return void
+     */
+    public function initialize(): void
+    {
+        parent::initialize();
+
+        // Initialize the Bootstrap UIViewTrait, but tell it to use our default layout
+        // instead of BootstrapUI's.
+        $this->initializeUI(['layout' => false]);
+    }
 }

@@ -20,8 +20,8 @@ use Cake\ORM\Entity;
  * @property string $external_depends
  * @property string $suggests
  * @property string $package_ci
- * @property \Cake\I18n\FrozenTime $created
- * @property \Cake\I18n\FrozenTime $modified
+ * @property \Cake\I18n\DateTime $created
+ * @property \Cake\I18n\DateTime $modified
  *
  * @property \App\Model\Entity\Package $package
  * @property \App\Model\Entity\Tag[] $tags
@@ -38,7 +38,7 @@ class Metadata extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         '*' => true,
         'id' => false
     ];

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -15,33 +17,37 @@
 namespace App\Controller;
 
 use Cake\Core\Configure;
-use Cake\Network\Exception\ForbiddenException;
-use Cake\Network\Exception\NotFoundException;
+use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\NotFoundException;
+use Cake\Http\Response;
 use Cake\View\Exception\MissingTemplateException;
 
 /**
  * Static content controller
  *
- * This controller will render views from Template/Pages/
+ * This controller will render views from templates/Pages/
  *
- * @link https://book.cakephp.org/3.0/en/controllers/pages-controller.html
+ * @link https://book.cakephp.org/4/en/controllers/pages-controller.html
  */
 class PagesController extends AppController
 {
+    public $Packages = null;
 
     /**
      * Displays a view
      *
-     * @param array ...$path Path segments.
+     * @param string ...$path Path segments.
      * @return \Cake\Http\Response|null
-     * @throws \Cake\Network\Exception\ForbiddenException When a directory traversal attempt.
-     * @throws \Cake\Network\Exception\NotFoundException When the view file could not
-     *   be found or \Cake\View\Exception\MissingTemplateException in debug mode.
+     * @throws \Cake\Http\Exception\ForbiddenException When a directory traversal attempt.
+     * @throws \Cake\View\Exception\MissingTemplateException When the view file could not
+     *   be found and in debug mode.
+     * @throws \Cake\Http\Exception\NotFoundException When the view file could not
+     *   be found and not in debug mode.
+     * @throws \Cake\View\Exception\MissingTemplateException In debug mode.
      */
-    public function display(...$path)
+    public function display(string ...$path): ?Response
     {
-        $count = count($path);
-        if (!$count) {
+        if (!$path) {
             return $this->redirect('/');
         }
         if (in_array('..', $path, true) || in_array('.', $path, true)) {
@@ -58,37 +64,35 @@ class PagesController extends AppController
         $this->set(compact('page', 'subpage'));
 
         /* Show Top 5 Watched and Last 5 Updated on home page */
-        $this->loadModel('Packages');
-        $packagecount = $this->Packages->find('all')->all()->count();
+        $packages = $this->fetchTable('Packages');
+        $packagecount = $packages->find('all')->all()->count();
         $this->set('packagecount', $packagecount);
-        $query = $this->Packages
+        $query = $packages
             ->find('all')
             ->select(['id', 'name', 'short_name', 'subscribers_count' ])
-            ->order(['Packages.subscribers_count' => 'desc'])
+            ->orderBy(['Packages.subscribers_count' => 'desc'])
             ->limit(5);
         $this->set('topwatched', $query->all());
-        $query = $this->Packages
+        $query = $packages
             ->find('all')
             ->select(['id', 'name', 'short_name', 'stargazers_count' ])
-            ->order(['Packages.stargazers_count' => 'desc'])
+            ->orderBy(['Packages.stargazers_count' => 'desc'])
             ->limit(5);
         $this->set('topstarred', $query->all());
-        $query = $this->Packages
+        $query = $packages
             ->find('all')
             ->select(['id', 'name', 'short_name', 'pushed_at' ])
-            ->order(['Packages.pushed_at' => 'desc'])
+            ->orderBy(['Packages.pushed_at' => 'desc'])
             ->limit(5);
         $this->set('lastupdated', $query->all());
 
-
         try {
-            $this->render(implode('/', $path));
+            return $this->render(implode('/', $path));
         } catch (MissingTemplateException $exception) {
             if (Configure::read('debug')) {
                 throw $exception;
             }
             throw new NotFoundException();
         }
-
     }
 }

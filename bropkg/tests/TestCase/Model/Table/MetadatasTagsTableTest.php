@@ -35,7 +35,7 @@ class MetadatasTagsTableTest extends TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
         $config = TableRegistry::exists('MetadatasTags') ? [] : ['className' => MetadatasTagsTable::class];
@@ -47,7 +47,7 @@ class MetadatasTagsTableTest extends TestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown() : void
     {
         unset($this->MetadatasTags);
 
@@ -59,7 +59,7 @@ class MetadatasTagsTableTest extends TestCase
      *
      * @return void
      */
-    public function testInitialize()
+    public function testInitialize() : void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
@@ -69,7 +69,7 @@ class MetadatasTagsTableTest extends TestCase
      *
      * @return void
      */
-    public function testBuildRules()
+    public function testBuildRules() : void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }

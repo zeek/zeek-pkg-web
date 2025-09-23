@@ -1,0 +1,132 @@
+/**
+ * Override the padding on the global container element, since
+ * bootstrap's classes don't go skinny enough for our liking.
+ */
+.container {
+    padding-right: 7rem !important;
+    padding-left: 7rem !important;
+}
+
+body {
+    background-color: aliceblue;
+    color: #333;
+}
+li.libutton {
+    border: 2px solid white;
+    border-radius: 2px;
+}
+li.user {
+    color: white;
+    line-height: 2.8125rem;
+    margin-right: 10px;
+}
+li.search {
+    color: white;
+    line-height: 2.8125rem;
+    margin-left: 10px;
+}
+select.div-toggle {
+    width: 20%;
+}
+.markdown-body {
+    margin: 10px;
+    padding: 10px;
+    font-size: 14px;
+    min-width: 0px;
+}
+.markdown-body img {
+    max-width: 100%;
+}
+.packagebox {
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    margin-bottom: 20px;
+    padding: 10px 10px 0px 10px;
+    background-color: white;
+    text-decoration: none;
+}
+
+.packages a {
+    text-decoration: none;
+}
+
+a {
+    color: #036;
+}
+code {
+    color: #000;
+}
+h1,h2,h3,h4,h5,h6 {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 500;
+    color: #036;
+}
+.content h3 {
+    margin-bottom: 2rem;
+}
+.content h4 {
+    font-size: large;
+    display: inline;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+/* There's probably ways to do a bunch of what's below using Bootstrap's
+ * variables, but this works well enough for our needs.
+ */
+.navbar {
+    background-image: linear-gradient(rgb(255, 255, 255) 0px, rgb(248, 248, 248) 100%);
+    border-width: 0px;
+    box-shadow: rgba(255, 255, 255, 0.15) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.075) 0px 1px 5px 0px;
+}
+.navbar-brand {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+.nav-item {
+    padding-left: 10px;
+}
+.nav-link.active {
+    background-image: linear-gradient(rgb(219, 219, 219) 0px, rgb(226, 226, 226) 100%);
+    border-radius: .25rem;
+}
+
+pre {
+    background-color: #FFF;
+    border: 1px solid #999;
+    box-shadow: rgba(0, 0, 0, 0.24) 1px 2px 4px 0px;
+    padding: 5px;
+}
+
+/* This was part of Bootstrap 3.x but was replaced with an attribute
+ * selector called [hidden] in Bootstrap 4. The class is easier to use
+ * for our purposes.
+ */
+.hide {
+    display: none !important;
+}
+
+/* Add the up/down arrows to the table header in the Tags section, and
+ * remove the line from the header text.
+ */
+.asc:after {
+    content: " \2193";
+}
+.desc:after {
+    content: " \2191";
+}
+.zeek-tags-table-head a {
+    text-decoration: none;
+}
+
+/** Override some values from Boostrap's btn-secondary class to more
+ * match the style we're after.
+ */
+.btn-zeek {
+    background-image: linear-gradient(to bottom,#fff 0,#e0e0e0 100%);
+    text-shadow: 0 1px 0 #fff;
+    color: #333;
+    background-repeat: repeat-x;
+    border-color: #ccc;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.15),0 1px 1px rgba(0,0,0,.075);
+}
