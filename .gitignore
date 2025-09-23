@@ -1,3 +1,4 @@
+**/.DS_Store
 data
 
 # These will exist if you're using composer from directly inside the repo for dev.
