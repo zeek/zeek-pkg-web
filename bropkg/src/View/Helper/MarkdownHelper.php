@@ -2,7 +2,12 @@
 namespace App\View\Helper;
 
 use Cake\View\Helper;
-use League\CommonMark\CommonMarkConverter;
+use League\CommonMark\Environment\Environment;
+use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\DefaultAttributes\DefaultAttributesExtension;
+use League\CommonMark\Extension\Table\Table;
+use League\CommonMark\Extension\Table\TableExtension;
+use League\CommonMark\MarkdownConverter;
 
 /**
  * Markdown Helper
@@ -28,7 +33,21 @@ class MarkdownHelper extends Helper
       if ( $this->_converter !== null ) {
          return $this->_converter;
       }
-      $this->_converter = new CommonMarkConverter();
+
+      $config = [
+          'default_attributes' => [
+              Table::class => [
+                  'class' => 'table table-bordered'
+              ],
+          ],
+      ];
+
+      $environment = new Environment($config);
+      $environment->addExtension(new CommonMarkCoreExtension());
+      $environment->addExtension(new TableExtension());
+      $environment->addExtension(new DefaultAttributesExtension());
+
+      $this->_converter = new MarkdownConverter($environment);
       return $this->_converter;
   }
 
