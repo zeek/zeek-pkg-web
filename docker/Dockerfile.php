@@ -1,4 +1,4 @@
-FROM php:8.1.33-fpm AS base
+FROM php:8.4-fpm AS base
 WORKDIR /var/www/html
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -41,7 +41,7 @@ RUN pip3 install --no-cache-dir --break-system-packages 'bro-package-ci@git+http
 # We could use the composer image directly here but using the php
 # one guarantees we have the same version of php installed. Instead
 # we pull the composer script from one of their images into this one.
-FROM php:8.1.33-fpm AS build
+FROM php:8.4-fpm AS build
 WORKDIR /var/www/html
 
 ENV DEBIAN_FRONTEND=noninteractive
