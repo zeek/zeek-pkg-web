@@ -90,10 +90,15 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 pre {
-    background-color: #FFF;
-    border: 1px solid #999;
-    box-shadow: rgba(0, 0, 0, 0.24) 1px 2px 4px 0px;
-    padding: 5px;
+    background-color: #F0F1F2;
+    padding: 1rem;
+    border-radius: 0.25rem;
+}
+
+code {
+    background-color: #F0F1F2;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
 }
 
 /* This was part of Bootstrap 3.x but was replaced with an attribute

@@ -50,12 +50,9 @@ $this->assign('title', 'Home');
           example:
         </div>
       </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col mt-4 mb-4">
-      <pre>zkg install zeek/ncsa/bro-doctor</pre>
+      <div class="my-4">
+        <code class="p-3">zkg install zeek/ncsa/bro-doctor</code>
+      </div>
     </div>
   </div>
 
