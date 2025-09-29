@@ -62,7 +62,7 @@ $this->assign('title', 'Home');
   <hr class="my-4"/>
 
   <div class="row">
-    <div class="offset-5">
+    <div class="text-center">
       <h3>
         <?= $this->Html->link('View List of ' . $packagecount . ' Packages',
           ['controller' => 'packages']) ?>
@@ -72,8 +72,8 @@ $this->assign('title', 'Home');
 
   <hr class="my-4"/>
 
-  <div class="row">
-    <div class="col-sm-3 offset-2">
+  <div class="row justify-content-center">
+    <div class="col-sm-3">
       <h4 class="text-center">Top Watched</h4>
       <?php
         if (!empty($topwatched)) {
