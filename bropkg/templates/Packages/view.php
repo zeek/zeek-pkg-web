@@ -103,7 +103,7 @@ function strClean($str) {
             <?php if (preg_match('/\.rst$/', $package->readme_name)): ?>
                 <?= $this->RstMarkup->parse($package->readme); ?>
             <?php else: ?>
-                <?= $this->Markdown->parse($this->Markdown->canonify($package->readme, $package->url)); ?>
+                <?= $this->Markdown->parse($package->readme, $package->url); ?>
             <?php endif; ?>
             </article>
           </div>
