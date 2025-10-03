@@ -5,6 +5,8 @@ use Cake\View\Helper;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\DefaultAttributes\DefaultAttributesExtension;
+use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
+use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkRenderer;
 use League\CommonMark\Extension\Table\Table;
 use League\CommonMark\Extension\Table\TableExtension;
 use League\CommonMark\MarkdownConverter;
@@ -40,12 +42,18 @@ class MarkdownHelper extends Helper
                   'class' => 'table table-bordered'
               ],
           ],
+          'heading_permalink' => [
+              'id_prefix' => '',
+              'aria_hidden' => true,
+              'symbol' => '',
+          ]
       ];
 
       $environment = new Environment($config);
       $environment->addExtension(new CommonMarkCoreExtension());
       $environment->addExtension(new TableExtension());
       $environment->addExtension(new DefaultAttributesExtension());
+      $environment->addExtension(new HeadingPermalinkExtension());
 
       $this->_converter = new MarkdownConverter($environment);
       return $this->_converter;
@@ -80,7 +88,7 @@ class MarkdownHelper extends Helper
                   // Check for whether the URL in this has a scheme on it, something
                   // like https://. Anything without that, we can consider a relative
                   // link.
-                  if (empty(parse_url($matches[1], PHP_URL_SCHEME))) {
+                  if (empty(parse_url($matches[1], PHP_URL_SCHEME)) && !str_starts_with($matches[1], "#")) {
                       $url_path = parse_url($matches[1], PHP_URL_PATH);
 
                       // Github markdown links can have descriptive text after the link itself,
