@@ -25,12 +25,14 @@ class MarkdownHelper extends Helper
     /**
      * Parse Markdown text to HTML.
      */
-    public function parse($text)
+    public function parse(string $text, string $url)
     {
-        return $this->_getParser()->convert($text);
+        $canonified = $this->canonify($text, $url);
+        $parsed = $this->_getParser()->convert($text);
+        return $this->fix_img_urls($parsed, $url);
     }
 
-    protected function _getParser()
+    private function _getParser()
     {
         if ( $this->_converter !== null ) {
             return $this->_converter;
@@ -59,6 +61,40 @@ class MarkdownHelper extends Helper
         return $this->_converter;
     }
 
+    private function make_element_absolute_url(string $page_url, string $elem_path): string {
+        $url_path = parse_url($elem_path, PHP_URL_PATH);
+
+        // Github markdown links can have descriptive text after the link itself,
+        // separated by a space from the link. parse_url and path_info don't
+        // know this and so they return the whole thing. Split off just the first
+        // part as the extension.
+        $extension = explode(" ", pathinfo($url_path, PATHINFO_EXTENSION))[0];
+
+        if (strcasecmp($extension, "jpg") == 0 ||
+            strcasecmp($extension, "jpeg") == 0 ||
+            strcasecmp($extension, "png") == 0 ||
+            strcasecmp($extension, "gif") == 0 ||
+            strcasecmp($extension, "webp") == 0) {
+            $page_url = preg_replace('|://github\.com/|', '://raw.githubusercontent.com/', $page_url);
+                return $page_url . "/master/" . $elem_path;
+        }
+
+        return $page_url . "/blob/master/" . $elem_path;
+    }
+
+    private function fix_img_urls(string $html, string $page_url) {
+        $doc = new \DOMDocument();
+        $doc->loadHTML($html);
+
+        $imgs = $doc->getElementsByTagName("img");
+        foreach ($imgs as $img) {
+            $img_path = $this->make_element_absolute_url($page_url, $img->getAttribute("src"));
+            $img->setAttribute("src", $img_path);
+        }
+
+        return $doc->saveHTML();
+    }
+
     /**
      * Canonify Markdown content.
      *
@@ -66,7 +102,7 @@ class MarkdownHelper extends Helper
      * @param string $url The package URL for this Markdown.
      * @return bool|string
      */
-    public function canonify(string $input, string $url)
+    private function canonify(string $input, string $url)
     {
         // TODO: It'd really be better do this when parsing the package data instead
         // of doing this every time we load the package page.
@@ -86,24 +122,8 @@ class MarkdownHelper extends Helper
                     // like https://. Anything without that, we can consider a relative
                     // link.
                     if (empty(parse_url($matches[1], PHP_URL_SCHEME)) && !str_starts_with($matches[1], "#")) {
-                        $url_path = parse_url($matches[1], PHP_URL_PATH);
-
-                        // Github markdown links can have descriptive text after the link itself,
-                        // separated by a space from the link. parse_url and path_info don't
-                        // know this and so they return the whole thing. Split off just the first
-                        // part as the extension.
-                        $extension = explode(" ", pathinfo($url_path, PATHINFO_EXTENSION))[0];
-
-                        if (strcasecmp($extension, "jpg") == 0 ||
-                            strcasecmp($extension, "jpeg") == 0 ||
-                            strcasecmp($extension, "png") == 0 ||
-                            strcasecmp($extension, "gif") == 0 ||
-                            strcasecmp($extension, "webp") == 0) {
-                            $url = preg_replace('|://github\.com/|', '://raw.githubusercontent.com/', $url);
-                                return "](" . $url . "/master/" . $matches[1] . ")";
-                        }
-
-                        return "](" . $url . "/blob/master/" . $matches[1] . ")";
+                        $elem_url = $this->make_element_absolute_url($url, $matches[1]);
+                        return '](' . $elem_url . ')';
                     }
 
                     /* This already links to an absolute URL: keep as-is. */
