@@ -101,9 +101,9 @@ function strClean($str) {
           <div class="col border border-1 rounded-3 bg-white p-1">
             <article class="markdown-body entry-content">
             <?php if (preg_match('/\.rst$/', $package->readme_name)): ?>
-                <?= $this->RstMarkup->transform($package->readme); ?>
+                <?= $this->RstMarkup->parse($package->readme); ?>
             <?php else: ?>
-                <?= $this->Markdown->parse($this->Markdown->canonify($package->readme, $package->url)); ?>
+                <?= $this->Markdown->parse($package->readme, $package->url); ?>
             <?php endif; ?>
             </article>
           </div>
