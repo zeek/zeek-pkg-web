@@ -2,7 +2,7 @@
 namespace App\View\Helper;
 
 use Cake\View\Helper;
-use Gregwar\RST\Parser;
+use Doctrine\RST\Parser;
 
 /**
  * Rst markup helper
@@ -11,22 +11,30 @@ use Gregwar\RST\Parser;
  */
 class RstMarkupHelper extends Helper
 {
-  /**
-   * Parse RST markup input to HTML.
-   *
-   * @param string $input RST markup to be parsed.
-   * @return bool|string
-   */
-  public function transform($input)
-  {
-      if (!is_string($input)) {
-          return false;
-      }
+    protected $_parser;
 
-      if (!isset($this->parser)) {
-          $this->parser = new \Gregwar\RST\Parser;
-      }
+    /**
+     * Parse RST markup input to HTML.
+     *
+     * @param string $text RST markup to be parsed.
+     * @return string
+     */
+    public function parse(string $text)
+    {
+        $parsed = $this->_getParser()->parse($text);
+        return $parsed->render();
+    }
 
-      return $this->parser->parse($input);
-  }
+    /**
+     * Creates a static instance of the RST parser.
+     */
+    protected function _getParser()
+    {
+        if ( $this->_parser !== null ) {
+            return $this->_parser;
+        }
+
+        $this->_parser = new Parser();
+        return $this->_parser;
+    }
 }
