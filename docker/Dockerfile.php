@@ -30,7 +30,7 @@ RUN apt-get update -y \
     zip \
  # Install an initial version of zkg. This gets updated by cron
  # every night before updating the packages list.
- && pip3 install --no-cache-dir --break-system-packages zkg==3.0.1
+ && pip3 install --no-cache-dir --break-system-packages zkg==3.1.0
 
 # zeek-package-ci is used by the cronjob to sanity check zeek packages. On the image,
 # it's stored in /usr/local/bin/bro-package-ci. We explicitly pin to version 0.4.0
