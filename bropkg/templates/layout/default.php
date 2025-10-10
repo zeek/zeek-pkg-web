@@ -12,7 +12,7 @@ $this->request->getSession()->write('lastpage', $lastpage);
     <?= $this->Html->charset() ?>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <? echo $this->Html->meta('favicon.ico', '/favicon.ico', ['type' => 'icon']); ?>
+    <? echo $this->Html->meta('favicon.png', '/favicon.png', ['type' => 'icon']); ?>
     <title>
         <?= $pageDescription ?>:
         <?= $this->fetch('title') ?>
