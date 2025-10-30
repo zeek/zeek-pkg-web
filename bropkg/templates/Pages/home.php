@@ -51,7 +51,7 @@ $this->assign('title', 'Home');
         </div>
       </div>
       <div class="my-4">
-        <code class="p-3">zkg install zeek/ncsa/bro-doctor</code>
+        <code class="p-3">zkg install logschema</code>
       </div>
     </div>
   </div>
