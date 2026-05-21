@@ -115,7 +115,7 @@ class MarkdownHelper extends Helper
         if (strcasecmp(parse_url($url, PHP_URL_HOST), "github.com") == 0) {
             /* If the url passed is to github.com, we want to rewrite the relative
              * links so that they link to github. For images, we want to link to
-             * raw.githubcontent.com so it will load the actual image instead. Other
+             * raw.githubusercontent.com so it will load the actual image instead. Other
              * links can be to the repo view. There isn't a good way to look up the
              * MIME type for the paths, so just assume anything ending in .jpg or
              * .png is an image, and anything else isn't.
