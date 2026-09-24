@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -14,25 +16,42 @@
  */
 namespace App\Test\TestCase\Controller;
 
-use App\Controller\PagesController;
-use Cake\Core\App;
 use Cake\Core\Configure;
-use Cake\Http\Response;
-use Cake\Http\ServerRequest;
-use Cake\TestSuite\IntegrationTestCase;
-use Cake\View\Exception\MissingTemplateException;
+use Cake\TestSuite\IntegrationTestTrait;
+use Cake\TestSuite\TestCase;
 
 /**
  * PagesControllerTest class
  */
-class PagesControllerTest extends IntegrationTestCase
+class PagesControllerTest extends TestCase
 {
+    use IntegrationTestTrait;
+
     /**
-     * testMultipleGet method
+     * The home page queries the Packages table for its counts and top lists.
      *
-     * @return void
+     * @var array<string>
      */
-    public function testMultipleGet()
+    protected array $fixtures = [
+        'app.Packages',
+        'app.Metadatas',
+        'app.Tags',
+        'app.MetadatasTags',
+    ];
+
+    /**
+     * Restore the default debug level, since some tests toggle it.
+     */
+    public function tearDown(): void
+    {
+        Configure::write('debug', true);
+        parent::tearDown();
+    }
+
+    /**
+     * The root URL renders the home page successfully more than once.
+     */
+    public function testMultipleGet(): void
     {
         $this->get('/');
         $this->assertResponseOk();
@@ -41,24 +60,41 @@ class PagesControllerTest extends IntegrationTestCase
     }
 
     /**
-     * testDisplay method
-     *
-     * @return void
+     * The home page shows the package count and the "top" lists.
      */
-    public function testDisplay()
+    public function testHomePage(): void
+    {
+        $this->get('/');
+
+        $this->assertResponseOk();
+        $this->assertResponseContains('<html');
+        // Package count link.
+        $this->assertResponseContains('View List of 3 Packages');
+        // Intro copy / external links.
+        $this->assertResponseContains('Zeek Package Manager');
+        // With only three packages, every package appears in the top-5 lists,
+        // each linked to its view page.
+        $this->assertResponseContains('/packages/view/11111111-1111-4111-8111-111111111111');
+        $this->assertResponseContains('/packages/view/22222222-2222-4222-8222-222222222222');
+        $this->assertResponseContains('/packages/view/33333333-3333-4333-8333-333333333333');
+    }
+
+    /**
+     * /pages/home renders the same home template.
+     */
+    public function testDisplay(): void
     {
         $this->get('/pages/home');
+
         $this->assertResponseOk();
-        $this->assertResponseContains('CakePHP');
-        $this->assertResponseContains('<html>');
+        $this->assertResponseContains('<html');
+        $this->assertResponseContains('View List of 3 Packages');
     }
 
     /**
-     * Test that missing template renders 404 page in production
-     *
-     * @return void
+     * A missing template renders a 404 page in production mode.
      */
-    public function testMissingTemplate()
+    public function testMissingTemplate(): void
     {
         Configure::write('debug', false);
         $this->get('/pages/not_existing');
@@ -68,29 +104,25 @@ class PagesControllerTest extends IntegrationTestCase
     }
 
     /**
-     * Test that missing template in debug mode renders missing_template error page
-     *
-     * @return void
+     * A missing template surfaces the MissingTemplateException in debug mode.
      */
-    public function testMissingTemplateInDebug()
+    public function testMissingTemplateInDebug(): void
     {
         Configure::write('debug', true);
         $this->get('/pages/not_existing');
 
         $this->assertResponseFailure();
         $this->assertResponseContains('Missing Template');
-        $this->assertResponseContains('Stacktrace');
-        $this->assertResponseContains('not_existing.ctp');
+        $this->assertResponseContains('not_existing');
     }
 
     /**
-     * Test directory traversal protection
-     *
-     * @return void
+     * Directory traversal attempts are forbidden.
      */
-    public function testDirectoryTraversalProtection()
+    public function testDirectoryTraversalProtection(): void
     {
         $this->get('/pages/../Layout/ajax');
+
         $this->assertResponseCode(403);
         $this->assertResponseContains('Forbidden');
     }

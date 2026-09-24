@@ -67,3 +67,26 @@ also create a Let's Encrypt cert based on the hostname set in the
 docker exec -it zeek-pkg-web-php-1 /bin/bash
 /etc/cron.daily/bro-pkg-web-cron.sh
 ```
+
+# TESTING
+
+The application has a PHPUnit test suite under `bropkg/tests`. It covers the
+controllers (Pages, Packages, Tags) end to end via CakePHP's
+`IntegrationTestTrait` — exercising routing, search, pagination, redirects,
+error pages and rendered views — plus the ORM tables and their associations.
+
+The suite needs a MySQL/MariaDB database it can create tables in. The schema is
+loaded from `bropkg/tests/schema.sql` into the `test` connection on each run.
+Point the `test` connection at your database with the `DATABASE_TEST_URL`
+environment variable, then run PHPUnit from the `bropkg` directory:
+
+```
+export DATABASE_TEST_URL="mysql://user:password@host/test_bro?encoding=utf8mb4"
+cd bropkg
+composer install          # installs PHPUnit (a dev dependency)
+vendor/bin/phpunit
+```
+
+The same suite runs automatically on every pull request and push to `master`
+via the `tests` GitHub Actions workflow (`.github/workflows/tests.yml`), which
+spins up a MySQL service and runs PHPUnit against it.

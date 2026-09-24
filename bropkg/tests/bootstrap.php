@@ -17,7 +17,7 @@ declare(strict_types=1);
 
 use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
-use Migrations\TestSuite\Migrator;
+use Cake\TestSuite\Fixture\SchemaLoader;
 
 /**
  * Test runner bootstrap.
@@ -52,14 +52,10 @@ ConnectionManager::alias('test_debug_kit', 'debug_kit');
 // has been written to.
 session_id('cli');
 
-// Use migrations to build test database schema.
+// Build the test database schema from a SQL dump.
 //
-// Will rebuild the database if the migration state differs
-// from the migration history in files.
-//
-// If you are not using CakePHP's migrations you can
-// hook into your migration tool of choice here or
-// load schema from a SQL dump file with
-// use Cake\TestSuite\Fixture\SchemaLoader;
-// (new SchemaLoader())->loadSqlFiles('./tests/schema.sql', 'test');
-(new Migrator())->run();
+// This project does not use CakePHP migrations to manage its schema (the
+// production schema lives in `secrets/database.sql`), so we load an equivalent
+// schema into the `test` connection here. Tables are dropped and recreated on
+// each run so the schema always matches `tests/schema.sql`.
+(new SchemaLoader())->loadSqlFiles(__DIR__ . '/schema.sql', 'test');

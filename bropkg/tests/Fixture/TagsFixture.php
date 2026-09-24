@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Test\Fixture;
 
 use Cake\TestSuite\Fixture\TestFixture;
@@ -6,42 +8,29 @@ use Cake\TestSuite\Fixture\TestFixture;
 /**
  * TagsFixture
  *
+ * "scan" is attached to foo's metadata, "protocol" to bar's. "unused" has no
+ * associations so tests can cover a tag with no related packages.
  */
 class TagsFixture extends TestFixture
 {
-
-    /**
-     * Fields
-     *
-     * @var array
-     */
-    // @codingStandardsIgnoreStart
-    public $fields = [
-        'id' => ['type' => 'uuid', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
-        'name' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'utf8mb4_unicode_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
-        'created' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
-        'modified' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
-        '_constraints' => [
-            'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
-        ],
-        '_options' => [
-            'engine' => 'InnoDB',
-            'collation' => 'utf8mb4_unicode_ci'
-        ],
-    ];
-    // @codingStandardsIgnoreEnd
-
-    /**
-     * Records
-     *
-     * @var array
-     */
-    public $records = [
+    public array $records = [
         [
-            'id' => '7fc6b7f1-5b01-403b-a85b-bf6a1b06f048',
-            'name' => 'Lorem ipsum dolor sit amet',
-            'created' => '2017-10-04 18:56:13',
-            'modified' => '2017-10-04 18:56:13'
+            'id' => 'dddddddd-0001-4000-8000-000000000001',
+            'name' => 'scan',
+            'created' => '2024-01-01 00:00:00',
+            'modified' => '2024-01-01 00:00:00',
+        ],
+        [
+            'id' => 'dddddddd-0002-4000-8000-000000000002',
+            'name' => 'protocol',
+            'created' => '2024-01-01 00:00:00',
+            'modified' => '2024-01-01 00:00:00',
+        ],
+        [
+            'id' => 'dddddddd-0003-4000-8000-000000000003',
+            'name' => 'unused',
+            'created' => '2024-01-01 00:00:00',
+            'modified' => '2024-01-01 00:00:00',
         ],
     ];
 }

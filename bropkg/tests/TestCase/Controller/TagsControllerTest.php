@@ -1,74 +1,102 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Test\TestCase\Controller;
 
-use App\Controller\TagsController;
-use Cake\TestSuite\IntegrationTestCase;
+use Cake\TestSuite\IntegrationTestTrait;
+use Cake\TestSuite\TestCase;
 
 /**
  * App\Controller\TagsController Test Case
  */
-class TagsControllerTest extends IntegrationTestCase
+class TagsControllerTest extends TestCase
 {
+    use IntegrationTestTrait;
 
     /**
-     * Fixtures
-     *
-     * @var array
+     * @var array<string>
      */
-    public $fixtures = [
-        'app.tags',
-        'app.metadatas',
-        'app.packages',
-        'app.metadatas_tags'
+    protected array $fixtures = [
+        'app.Packages',
+        'app.Metadatas',
+        'app.Tags',
+        'app.MetadatasTags',
     ];
 
     /**
-     * Test index method
-     *
-     * @return void
+     * The index lists all tags sorted by name, each linking to its view.
      */
-    public function testIndex()
+    public function testIndex(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->get('/tags');
+
+        $this->assertResponseOk();
+        $this->assertResponseContains('scan');
+        $this->assertResponseContains('protocol');
+        $this->assertResponseContains('unused');
+        $this->assertResponseContains('/tags/view/dddddddd-0001-4000-8000-000000000001');
+        $this->assertResponseContains('record(s) out of 3 total');
     }
 
     /**
-     * Test view method
-     *
-     * @return void
+     * Viewing a tag shows the tag name and its related packages.
      */
-    public function testView()
+    public function testView(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->get('/tags/view/dddddddd-0001-4000-8000-000000000001');
+
+        $this->assertResponseOk();
+        $this->assertResponseContains('scan');
+        // "scan" is attached to foo's metadata, so foo is the only related package.
+        $this->assertResponseContains('zeek/foo');
+        $this->assertResponseContains('/packages/view/11111111-1111-4111-8111-111111111111');
+        $this->assertResponseNotContains('zeek/bar');
     }
 
     /**
-     * Test add method
-     *
-     * @return void
+     * A tag with no associated metadata renders with no related packages.
      */
-    public function testAdd()
+    public function testViewTagWithoutPackages(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->get('/tags/view/dddddddd-0003-4000-8000-000000000003');
+
+        $this->assertResponseOk();
+        $this->assertResponseContains('unused');
+        $this->assertResponseNotContains('zeek/foo');
+        $this->assertResponseNotContains('zeek/bar');
     }
 
     /**
-     * Test edit method
-     *
-     * @return void
+     * Viewing without an id redirects to the index.
      */
-    public function testEdit()
+    public function testViewWithoutIdRedirectsToIndex(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->get('/tags/view');
+
+        $this->assertRedirect(['controller' => 'Tags', 'action' => 'index']);
     }
 
     /**
-     * Test delete method
-     *
-     * @return void
+     * Trailing junk after the id redirects to the canonical view URL.
      */
-    public function testDelete()
+    public function testViewWithTrailingJunkRedirects(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->get('/tags/view/dddddddd-0001-4000-8000-000000000001/extra');
+
+        $this->assertRedirect([
+            'controller' => 'Tags',
+            'action' => 'view',
+            'dddddddd-0001-4000-8000-000000000001',
+        ]);
+    }
+
+    /**
+     * An unknown id yields a 404.
+     */
+    public function testViewUnknownIdReturnsNotFound(): void
+    {
+        $this->get('/tags/view/00000000-0000-4000-8000-000000000000');
+
+        $this->assertResponseCode(404);
     }
 }
