@@ -7,7 +7,7 @@ on:
 
 jobs:
   phpunit:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     services:
       mysql:
@@ -32,10 +32,10 @@ jobs:
       DATABASE_TEST_URL: "mysql://root:root@127.0.0.1/test_myapp?encoding=utf8mb4&timezone=UTC"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # 7.0.1
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.3.2
         with:
           php-version: '8.4'
           extensions: intl, pdo_mysql, mysqli, zip, sqlite3, pdo_sqlite
