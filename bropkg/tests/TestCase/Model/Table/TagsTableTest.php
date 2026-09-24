@@ -1,8 +1,9 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Test\TestCase\Model\Table;
 
 use App\Model\Table\TagsTable;
-use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -10,67 +11,56 @@ use Cake\TestSuite\TestCase;
  */
 class TagsTableTest extends TestCase
 {
+    protected TagsTable $Tags;
 
     /**
-     * Test subject
-     *
-     * @var \App\Model\Table\TagsTable
+     * @var array<string>
      */
-    public $Tags;
-
-    /**
-     * Fixtures
-     *
-     * @var array
-     */
-    public $fixtures = [
-        'app.tags',
-        'app.metadatas',
-        'app.packages',
-        'app.metadatas_tags'
+    protected array $fixtures = [
+        'app.Packages',
+        'app.Metadatas',
+        'app.Tags',
+        'app.MetadatasTags',
     ];
 
-    /**
-     * setUp method
-     *
-     * @return void
-     */
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
-        $config = TableRegistry::exists('Tags') ? [] : ['className' => TagsTable::class];
-        $this->Tags = TableRegistry::get('Tags', $config);
+        $this->Tags = $this->getTableLocator()->get('Tags');
     }
 
-    /**
-     * tearDown method
-     *
-     * @return void
-     */
-    public function tearDown() : void
+    public function tearDown(): void
     {
         unset($this->Tags);
-
         parent::tearDown();
     }
 
     /**
-     * Test initialize method
-     *
-     * @return void
+     * The Metadatas belongsToMany association is configured.
      */
     public function testInitialize(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->assertSame('tags', $this->Tags->getTable());
+        $this->assertSame('name', $this->Tags->getDisplayField());
+        $this->assertTrue($this->Tags->hasAssociation('Metadatas'));
+        $this->assertSame(
+            'Cake\ORM\Association\BelongsToMany',
+            get_class($this->Tags->getAssociation('Metadatas'))
+        );
     }
 
     /**
-     * Test validationDefault method
-     *
-     * @return void
+     * A tag can be loaded with its associated metadata records.
      */
-    public function testValidationDefault() : void
+    public function testContainMetadatas(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $tag = $this->Tags->get(
+            'dddddddd-0001-4000-8000-000000000001',
+            contain: ['Metadatas']
+        );
+
+        $this->assertSame('scan', $tag->name);
+        // "scan" is linked to both of foo's metadata versions.
+        $this->assertCount(2, $tag->metadatas);
     }
 }

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Test\Fixture;
 
 use Cake\TestSuite\Fixture\TestFixture;
@@ -6,70 +8,89 @@ use Cake\TestSuite\Fixture\TestFixture;
 /**
  * MetadatasFixture
  *
+ * foo has two versions (1.0.0 and 2.0.0) to exercise the version selector on
+ * the package view. bar carries a package_ci JSON blob to exercise the
+ * "Package Checks" rendering. Descriptions use distinct tokens (Alpha/Beta/
+ * Gamma) so search assertions can target a single package.
  */
 class MetadatasFixture extends TestFixture
 {
-
-    /**
-     * Fields
-     *
-     * @var array
-     */
-    // @codingStandardsIgnoreStart
-    public $fields = [
-        'id' => ['type' => 'uuid', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
-        'package_id' => ['type' => 'uuid', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
-        'version' => ['type' => 'string', 'length' => 255, 'null' => true, 'default' => null, 'collate' => 'utf8mb4_unicode_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
-        'description' => ['type' => 'text', 'length' => null, 'null' => true, 'default' => null, 'collate' => 'utf8mb4_unicode_ci', 'comment' => '', 'precision' => null],
-        'script_dir' => ['type' => 'text', 'length' => null, 'null' => true, 'default' => null, 'collate' => 'utf8mb4_unicode_ci', 'comment' => '', 'precision' => null],
-        'plugin_dir' => ['type' => 'text', 'length' => null, 'null' => true, 'default' => null, 'collate' => 'utf8mb4_unicode_ci', 'comment' => '', 'precision' => null],
-        'build_command' => ['type' => 'text', 'length' => null, 'null' => true, 'default' => null, 'collate' => 'utf8mb4_unicode_ci', 'comment' => '', 'precision' => null],
-        'user_vars' => ['type' => 'text', 'length' => null, 'null' => true, 'default' => null, 'collate' => 'utf8mb4_unicode_ci', 'comment' => '', 'precision' => null],
-        'test_command' => ['type' => 'text', 'length' => null, 'null' => true, 'default' => null, 'collate' => 'utf8mb4_unicode_ci', 'comment' => '', 'precision' => null],
-        'config_files' => ['type' => 'text', 'length' => null, 'null' => true, 'default' => null, 'collate' => 'utf8mb4_unicode_ci', 'comment' => '', 'precision' => null],
-        'depends' => ['type' => 'text', 'length' => null, 'null' => true, 'default' => null, 'collate' => 'utf8mb4_unicode_ci', 'comment' => '', 'precision' => null],
-        'external_depends' => ['type' => 'text', 'length' => null, 'null' => true, 'default' => null, 'collate' => 'utf8mb4_unicode_ci', 'comment' => '', 'precision' => null],
-        'suggests' => ['type' => 'text', 'length' => null, 'null' => true, 'default' => null, 'collate' => 'utf8mb4_unicode_ci', 'comment' => '', 'precision' => null],
-        'package_ci' => ['type' => 'text', 'length' => null, 'null' => true, 'default' => null, 'collate' => 'utf8mb4_unicode_ci', 'comment' => '', 'precision' => null],
-        'created' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
-        'modified' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
-        '_indexes' => [
-            'package_key' => ['type' => 'index', 'columns' => ['package_id'], 'length' => []],
-        ],
-        '_constraints' => [
-            'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
-            'package_key' => ['type' => 'foreign', 'columns' => ['package_id'], 'references' => ['packages', 'id'], 'update' => 'restrict', 'delete' => 'restrict', 'length' => []],
-        ],
-        '_options' => [
-            'engine' => 'InnoDB',
-            'collation' => 'utf8mb4_unicode_ci'
-        ],
-    ];
-    // @codingStandardsIgnoreEnd
-
-    /**
-     * Records
-     *
-     * @var array
-     */
-    public $records = [
+    public array $records = [
+        // foo 1.0.0
         [
-            'id' => 'c53d71bb-032d-4924-9cba-9a93b5f940ee',
-            'package_id' => 'd516f0d4-a806-4760-b82a-9a01e09c2c00',
-            'version' => 'Lorem ipsum dolor sit amet',
-            'description' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
-            'script_dir' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
-            'plugin_dir' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
-            'build_command' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
-            'user_vars' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
-            'test_command' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
-            'config_files' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
-            'depends' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
-            'external_depends' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
-            'suggests' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
-            'package_ci' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
-            'created' => '2017-10-05 14:39:06',
-            'modified' => '2017-10-05 14:39:06'
+            'id' => 'aaaaaaaa-0001-4000-8000-000000000001',
+            'package_id' => '11111111-1111-4111-8111-111111111111',
+            'version' => '1.0.0',
+            'description' => 'Alpha package for scanning traffic.',
+            'script_dir' => 'scripts',
+            'plugin_dir' => null,
+            'build_command' => null,
+            'user_vars' => null,
+            'test_command' => null,
+            'config_files' => null,
+            'depends' => null,
+            'external_depends' => null,
+            'suggests' => null,
+            'package_ci' => null,
+            'created' => '2024-01-01 00:00:00',
+            'modified' => '2024-01-01 00:00:00',
+        ],
+        // foo 2.0.0 (latest; shown first on the index)
+        [
+            'id' => 'aaaaaaaa-0002-4000-8000-000000000002',
+            'package_id' => '11111111-1111-4111-8111-111111111111',
+            'version' => '2.0.0',
+            'description' => 'Alpha package version two.',
+            'script_dir' => 'scripts',
+            'plugin_dir' => null,
+            'build_command' => null,
+            'user_vars' => null,
+            'test_command' => null,
+            'config_files' => null,
+            'depends' => null,
+            'external_depends' => null,
+            'suggests' => null,
+            'package_ci' => null,
+            'created' => '2024-06-15 12:00:00',
+            'modified' => '2024-06-15 12:00:00',
+        ],
+        // bar 1.0 (with CI results)
+        [
+            'id' => 'bbbbbbbb-0001-4000-8000-000000000001',
+            'package_id' => '22222222-2222-4222-8222-222222222222',
+            'version' => '1.0',
+            'description' => 'Beta protocol analyzer.',
+            'script_dir' => null,
+            'plugin_dir' => 'build',
+            'build_command' => null,
+            'user_vars' => null,
+            'test_command' => null,
+            'config_files' => null,
+            'depends' => null,
+            'external_depends' => null,
+            'suggests' => null,
+            'package_ci' => '{"ok":true,"checks":[{"name":"build_zeek","ok":true},{"name":"dns_resolution","ok":false,"errors":["lookup failed"]}]}',
+            'created' => '2024-02-01 08:30:00',
+            'modified' => '2024-02-01 08:30:00',
+        ],
+        // baz 0.1
+        [
+            'id' => 'cccccccc-0001-4000-8000-000000000001',
+            'package_id' => '33333333-3333-4333-8333-333333333333',
+            'version' => '0.1',
+            'description' => 'Gamma utility helper.',
+            'script_dir' => null,
+            'plugin_dir' => null,
+            'build_command' => null,
+            'user_vars' => null,
+            'test_command' => null,
+            'config_files' => null,
+            'depends' => null,
+            'external_depends' => null,
+            'suggests' => null,
+            'package_ci' => null,
+            'created' => '2024-01-03 00:00:00',
+            'modified' => '2024-01-03 00:00:00',
         ],
     ];
 }
