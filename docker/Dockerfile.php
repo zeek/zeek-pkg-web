@@ -15,7 +15,7 @@ RUN apt-get update -y \
     python3-pip=25.1.1+dfsg-1 \
     python3-semantic-version=2.10.0-3 \
     python3-setuptools=78.1.1-0.1 \
-    unzip=6.0-29 \
+    unzip=6.0-29+deb13u1 \
     vim=2:9.1.1230-2 \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* \
@@ -51,7 +51,7 @@ RUN apt-get update -y \
     libicu-dev=76.1-4 \
     libzip-dev=1.11.3-2 \
     npm=9.2.0~ds1-3 \
-    unzip=6.0-29 \
+    unzip=6.0-29+deb13u1 \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
